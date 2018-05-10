@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/env_rl_itemcontent"
+    android:layout_width="match_parent"
+    android:layout_height="200dp">
+
+    <TextView
+        android:id="@+id/env_tv_senseDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="傳感器名稱" />
+
+    <TextView
+        android:id="@+id/env_tv_senseData"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/shape_oval_white"
+        android:gravity="center"
+        android:text="數據" />
+
+</RelativeLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/rechargehistory_tv_lvitemrownum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="序号" />
+
+    <TextView
+        android:id="@+id/rechargehistory_tv_lvitemcarid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="车号" />
+
+    <TextView
+        android:id="@+id/rechargehistory_tv_lvitemrechargemoney"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="充值金额(元)" />
+
+    <TextView
+        android:id="@+id/rechargehistory_tv_lvitemuname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="操作人" />
+
+    <TextView
+        android:id="@+id/rechargehistory_tv_lvitemrechargedate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="充值时间" />
+
+</LinearLayout>
