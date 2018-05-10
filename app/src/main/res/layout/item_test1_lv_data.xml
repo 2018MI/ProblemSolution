@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_margin="5dp"
+        android:textSize="20sp"
+        android:text="小车编号: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_margin="5dp"
+        android:textSize="20sp"
+        android:id="@+id/test1_tv_lvcarid"
+        android:text="-1號"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Switch
+        android:layout_margin="5dp"
+        android:textSize="20sp"
+        android:id="@+id/test1_switch_lvcontrol"
+        android:textOn="开"
+        android:textOff="停"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

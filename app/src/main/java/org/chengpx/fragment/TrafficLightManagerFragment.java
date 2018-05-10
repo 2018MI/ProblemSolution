@@ -110,6 +110,7 @@ public class TrafficLightManagerFragment extends Fragment implements AdapterView
     private void onDims() {
         mTimer.cancel();
         mTimer = null;
+        mReqGetTrafficLightConfigActionIndex = 0;
     }
 
     @Override

@@ -20,6 +20,10 @@ public class CarBean {
     private Date rechargeTime;
     @DatabaseField(columnName = "rechargeUName")
     private String rechargeUName;
+    @DatabaseField(persisted = false)
+    private Boolean enable;
+    @DatabaseField(persisted = false)
+    private String CarAction;
 
     public CarBean(Integer carId) {
         CarId = carId;
@@ -85,4 +89,19 @@ public class CarBean {
         this.rechargeUName = rechargeUName;
     }
 
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
+    }
+
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public String getCarAction() {
+        return CarAction;
+    }
+
+    public void setCarAction(String carAction) {
+        CarAction = carAction;
+    }
 }

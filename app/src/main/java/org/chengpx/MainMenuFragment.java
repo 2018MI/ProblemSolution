@@ -15,7 +15,9 @@ import android.widget.ListView;
 
 import org.chengpx.fragment.BalanceRechargeFragment;
 import org.chengpx.fragment.EnvFragment;
+import org.chengpx.fragment.MyEtcFragment;
 import org.chengpx.fragment.TrafficLightManagerFragment;
+import org.chengpx.fragment.TravelManagementFragment;
 
 /**
  * create at 2018/5/9 14:45 by chengpx
@@ -25,10 +27,11 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private FragmentActivity mFragmentActivity;
     private ListView mainmenuLvItems;
     private String[] mItemStrArr = {
-            "道路环境", "etc账户充值", "红绿灯管理"
+            "道路环境", "etc账户充值", "红绿灯管理", "etc管理", "小车单双号管制"
     };
     private Fragment[] mFragmentArr = {
-            new EnvFragment(), new BalanceRechargeFragment(), new TrafficLightManagerFragment()
+            new EnvFragment(), new BalanceRechargeFragment(), new TrafficLightManagerFragment(),
+            new MyEtcFragment(), new TravelManagementFragment()
     };
 
     @Override
