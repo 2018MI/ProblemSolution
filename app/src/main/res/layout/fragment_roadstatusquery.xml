@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="6">
+
+        <TextView
+            android:id="@+id/test13_tv_hcksltop"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@drawable/shape_rectangle_status1"
+            android:gravity="center"
+            android:text="环城快速路"
+            android:textColor="#ffff" />
+
+        <TextView
+            android:id="@+id/test13_tv_hckslleft"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_rectangle_status1"
+            android:gravity="center"
+            android:text="环城快速路"
+            android:textColor="#ffff" />
+
+        <TextView
+            android:id="@+id/test13_tv_hckslbottom"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/shape_rectangle_status1"
+            android:gravity="center"
+            android:text="环城快速路"
+            android:textColor="#ffff" />
+
+        <TextView
+            android:id="@+id/test13_tv_hcgsright"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shape_rectangle_status1"
+            android:gravity="center"
+            android:text="环城高速"
+            android:textColor="#ffff" />
+
+
+        <LinearLayout
+            android:id="@+id/test13_ll_xuexiaoroadxinfuroad"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="120dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/test13_tv_xuexiaoroad"
+                android:layout_width="30dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_rectangle_status1"
+                android:gravity="center"
+                android:text="学校路"
+                android:textColor="#ffff" />
+
+            <TextView
+                android:id="@+id/test13_tv_xinfuroad"
+                android:layout_width="30dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_rectangle_status1"
+                android:gravity="center"
+                android:text="幸福路"
+                android:textColor="#ffff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="240dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/test13_tv_lenovoroad"
+                android:layout_width="30dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_rectangle_status1"
+                android:gravity="center"
+                android:text="联想路"
+                android:textColor="#ffff" />
+
+            <TextView
+                android:id="@+id/test13_tv_hospitalroad"
+                android:layout_width="30dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_rectangle_status1"
+                android:gravity="center"
+                android:text="医院路"
+                android:textColor="#ffff" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/test13_tv_parking"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="120dp"
+            android:background="@drawable/shape_rectangle_status1"
+            android:gravity="center"
+            android:text="停车场"
+            android:textColor="#ffff" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4">
+
+            <TextView
+                android:id="@+id/test13_tv_date"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:minLines="2"
+                android:textSize="30sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/test13_btn_flush"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="刷新" />
+
+                <ListView
+                    android:id="@+id/test13_lv_senselist"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="道路拥挤状态示意: " />
+
+                <ListView
+                    android:id="@+id/test13_lv_roadstatusexmaple"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ic_launcher" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

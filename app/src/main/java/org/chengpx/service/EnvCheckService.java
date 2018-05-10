@@ -20,7 +20,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +83,7 @@ public class EnvCheckService extends Service {
             }
             Integer val = map.get(envBean.getSenseName()).intValue();
             if (val > anInt) {
-                sendNotification(envBean.getSenseDesc(), val, envBean.getRange(), index);
+                sendNotification(envBean.getSenseDesc(), val, anInt, index);
             } else {
                 clearNotification(index);
             }
@@ -97,10 +96,10 @@ public class EnvCheckService extends Service {
         notificationManager.cancel(flag);
     }
 
-    private void sendNotification(String senseDesc, Integer val, int[] range, int flag) {
+    private void sendNotification(String senseDesc, Integer val, int yuzhi, int flag) {
         Notification notification = new NotificationCompat.Builder(this).setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(new SimpleDateFormat("yyyy年MM月dd日").format(Calendar.getInstance(Locale.CHINA).getTime())
-                        + senseDesc + "值: " + val + "超出阈值范围:" + Arrays.toString(range))
+                        + senseDesc + "值:" + val + "超出阈值范围:" + yuzhi)
                 .setAutoCancel(true).build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         assert notificationManager != null;
@@ -119,7 +118,7 @@ public class EnvCheckService extends Service {
         }
         Integer val = roadBean.getStatus();
         if (val > anInt) {
-            sendNotification(envBean.getSenseDesc(), val, envBean.getRange(), mEnvBeanArr.length - 1);
+            sendNotification(envBean.getSenseDesc(), val, anInt, mEnvBeanArr.length - 1);
         } else {
             clearNotification(mEnvBeanArr.length - 1);
         }

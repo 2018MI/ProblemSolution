@@ -9,6 +9,13 @@ public class RoadBean {
     private int RoadId;
     private int Status;
 
+    public RoadBean(int roadId) {
+        RoadId = roadId;
+    }
+
+    public RoadBean() {
+    }
+
     public int getRoadId() {
         return RoadId;
     }

@@ -30,7 +30,7 @@ import java.util.TimerTask;
 
 public class EnvFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
-    private String mTag;
+    private String mTag = "org.chengpx.fragment.EnvFragment";
 
     private GridView env_gridview_content;
     private Timer timer;
@@ -41,9 +41,9 @@ public class EnvFragment extends BaseFragment implements AdapterView.OnItemClick
     private EnvBean[] mEnvBeanArr = {
             new EnvBean("temperature", "温度", new int[]{0, 37}),
             new EnvBean("humidity", "湿度", new int[]{20, 80}),
-            new EnvBean("LightIntensity", "光照", new int[]{0, 7000}),
-            new EnvBean("co2", "CO2", new int[]{0, 300}),
-            new EnvBean("pm2.5", "PM2.5", new int[]{350, 5000}),
+            new EnvBean("LightIntensity", "光照", new int[]{1, 5000}),
+            new EnvBean("co2", "CO2", new int[]{300, 7000}),
+            new EnvBean("pm2.5", "PM2.5", new int[]{0, 300}),
             new EnvBean("RoadStatus", "道路状态", new int[]{1, 5})
     };
 

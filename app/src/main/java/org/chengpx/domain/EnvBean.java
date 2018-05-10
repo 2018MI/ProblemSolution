@@ -19,6 +19,8 @@ public class EnvBean {
     private int[] range;
     @DatabaseField(columnName = "val")
     private Integer val;
+    @DatabaseField(persisted = false)
+    private String unit;
 
     public EnvBean(String senseName, String senseDesc, int[] range) {
         this.senseName = senseName;
@@ -32,6 +34,12 @@ public class EnvBean {
     public EnvBean(String senseName, int[] range) {
         this.senseName = senseName;
         this.range = range;
+    }
+
+    public EnvBean(String senseName, String senseDesc, String unit) {
+        this.senseName = senseName;
+        this.senseDesc = senseDesc;
+        this.unit = unit;
     }
 
     public int getId() {
@@ -82,4 +90,11 @@ public class EnvBean {
         this.val = val;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 }
