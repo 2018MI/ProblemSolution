@@ -1,10 +1,6 @@
 package org.chengpx.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.GetTrafficLightNowStatusBean;
 import org.chengpx.domain.RuleBean;
@@ -37,7 +34,7 @@ import java.util.TimerTask;
 /**
  * create at 2018/5/9 20:43 by chengpx
  */
-public class TrafficLightManagerFragment extends Fragment implements AdapterView.OnItemSelectedListener, Comparator<Integer> {
+public class TrafficLightManagerFragment extends BaseFragment implements AdapterView.OnItemSelectedListener, Comparator<Integer> {
 
     private String mTag = "org.chengpx.fragment.TrafficLightManagerFragment";
     private ImageView trafficlightmanagerIvRedlight;
@@ -48,7 +45,6 @@ public class TrafficLightManagerFragment extends Fragment implements AdapterView
     private Integer[] mRoadIdArr = {1, 2, 3};
     private int mReqGetTrafficLightConfigActionIndex;
     private Map<Integer, TrafficLightBean> mTrafficLightBeanMap;
-    private FragmentActivity mFragmentActivity;
     private MyAdapter mMyAdapter;
     private String[] mRuleArr = {
             "路口升序", "路口降序", "红灯升序", "红灯降序", "绿灯升序", "绿灯降序",
@@ -66,20 +62,11 @@ public class TrafficLightManagerFragment extends Fragment implements AdapterView
     };
     private Timer mTimer;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mFragmentActivity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         trafficlightmanagerSpinnerRules.setOnItemSelectedListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_trafficlightmanager, container, false);
         trafficlightmanagerIvRedlight = (ImageView) view.findViewById(R.id.trafficlightmanager_iv_redlight);
         trafficlightmanagerIvYellowlight = (ImageView) view.findViewById(R.id.trafficlightmanager_iv_yellowlight);
@@ -89,44 +76,25 @@ public class TrafficLightManagerFragment extends Fragment implements AdapterView
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
-    }
-
-    private void onDie() {
+    protected void onDie() {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        initData();
-        main();
-    }
-
-    private void onDims() {
+    protected void onDims() {
         mTimer.cancel();
         mTimer = null;
         mReqGetTrafficLightConfigActionIndex = 0;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        onDims();
         EventBus.getDefault().unregister(this);
     }
 
-    private void main() {
+    protected void main() {
         mMyAdapter = new MyAdapter();
         trafficlightmanagerLvData.setAdapter(mMyAdapter);
         trafficlightmanagerSpinnerRules.setAdapter(new ArrayAdapter<String>(mFragmentActivity, android.R.layout.simple_spinner_item, mRuleArr));
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
         mTrafficLightBeanMap = new HashMap<>();
         Map<String, Integer> values = new HashMap<>();
         values.put("TrafficLightId", mRoadIdArr[mReqGetTrafficLightConfigActionIndex]);

@@ -1,9 +1,6 @@
 package org.chengpx.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;
@@ -30,7 +28,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class EnvFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class EnvFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     private String mTag;
 
@@ -38,7 +36,6 @@ public class EnvFragment extends Fragment implements AdapterView.OnItemClickList
     private Timer timer;
     private Map<String, EnvBean> mDataMap;
     private MyAdapter myAdapter;
-    private FragmentActivity fragmentActivity;
     private EnvDao envDao;
     private int mInsertCount;
     private EnvBean[] mEnvBeanArr = {
@@ -50,68 +47,40 @@ public class EnvFragment extends Fragment implements AdapterView.OnItemClickList
             new EnvBean("RoadStatus", "道路状态", new int[]{1, 5})
     };
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragmentActivity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         env_gridview_content.setOnItemClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_env, container, false);
         env_gridview_content = (GridView) view.findViewById(R.id.env_gridview_content);
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
+    protected void onDie() {
     }
 
-    private void onDie() {
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         myAdapter = new MyAdapter();
         env_gridview_content.setAdapter(myAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
         mDataMap = new HashMap<>();
-        envDao = EnvDao.getInstance(fragmentActivity);
+        envDao = EnvDao.getInstance(mFragmentActivity);
         timer = new Timer();
         timer.schedule(new MyTimerTask(), 0, 3000);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-        onDims();
-    }
-
-    private void onDims() {
+    protected void onDims() {
         timer.cancel();
         timer = null;
         mInsertCount = 0;
         myAdapter = null;
         mDataMap = null;
         envDao = null;
+        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -190,7 +159,7 @@ public class EnvFragment extends Fragment implements AdapterView.OnItemClickList
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder = null;
             if (view == null) {
-                view = LayoutInflater.from(fragmentActivity).inflate(R.layout.item_env_gridview_content,
+                view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.item_env_gridview_content,
                         env_gridview_content, false);
                 viewHolder = ViewHolder.get(view);
             } else {

@@ -2,9 +2,6 @@ package org.chengpx.fragment;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CarBean;
 import org.chengpx.util.db.CarDao;
@@ -32,16 +30,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class BalanceRechargeFragment extends Fragment implements View.OnClickListener {
+public class BalanceRechargeFragment extends BaseFragment implements View.OnClickListener {
 
-    private String mTag = "mad.com.its02.fragment.BalanceRechargeFragment";
+    private String mTag = "org.chengpx.fragment.BalanceRechargeFragment";
 
     private Button balancerechargeBtnMulitpeRechage;
     private Button balancerechargeBtnRechargehistory;
     private ListView balancerechargeLvData;
     private MyAdapter myAdapter;
     private Map<Integer, CarBean> mCarBeanMap;
-    private FragmentActivity fragmentActivity;
     private AlertDialog alertDialog;
     private TextView rechargedialogTvCarIds;
     private EditText rechargedialogEtMoney;
@@ -52,22 +49,12 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
     private int mReqGetCarAccountBalanceIndex;
     private int rechargeMoney;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragmentActivity = getActivity();
-        carDao = CarDao.getInstance(fragmentActivity);
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         balancerechargeBtnMulitpeRechage.setOnClickListener(this);
         balancerechargeBtnRechargehistory.setOnClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_balancerecharge, container, false);
         balancerechargeBtnMulitpeRechage = (Button) view.findViewById(R.id.balancerecharge_btn_mulitpeRechage);
         balancerechargeBtnRechargehistory = (Button) view.findViewById(R.id.balancerecharge_btn_rechargehistory);
@@ -75,31 +62,18 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
+    protected void onDie() {
+        mFragmentActivity = null;
     }
 
-    private void onDie() {
-        carDao = null;
-        fragmentActivity = null;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         myAdapter = new MyAdapter();
         balancerechargeLvData.setAdapter(myAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
+        carDao = CarDao.getInstance(mFragmentActivity);
         mCarBeanMap = new HashMap<>();
         Map<String, Integer> values = new HashMap<>();
         values.put("CarId", mCarBeanArr[mReqGetCarAccountBalanceIndex].getCarId());
@@ -123,25 +97,20 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-        onDims();
-    }
-
-    private void onDims() {
+    protected void onDims() {
+        carDao = null;
         mCarBeanMap = null;
         myAdapter = null;
         mRechargeCarIdIndex = 0;
         mReqGetCarAccountBalanceIndex = 0;
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.balancerecharge_btn_rechargehistory:
-                FragmentTransaction fragmentTransaction = fragmentActivity.getSupportFragmentManager().beginTransaction();
+                FragmentTransaction fragmentTransaction = mFragmentActivity.getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.main_fl_content, new RechargeHistoryFragment());
                 fragmentTransaction.commit();
                 break;
@@ -173,7 +142,7 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
                     }
                 }
                 if (TextUtils.isEmpty(rechargedialogTvCarIds.getText())) {
-                    Toast.makeText(fragmentActivity, "请至少选择一个", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mFragmentActivity, "请至少选择一个", Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                     alertDialog = null;
                 }
@@ -184,12 +153,12 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
     private void recharge() {
         String strMoney = rechargedialogEtMoney.getText().toString();
         if (!strMoney.matches("^\\d{1,3}$")) {
-            Toast.makeText(fragmentActivity, "金额非法", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mFragmentActivity, "金额非法", Toast.LENGTH_SHORT).show();
             return;
         }
         int money = Integer.parseInt(strMoney);
         if (money < 1 || money > 999) {
-            Toast.makeText(fragmentActivity, "金额非法", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mFragmentActivity, "金额非法", Toast.LENGTH_SHORT).show();
             return;
         }
         String strCarId = rechargedialogTvCarIds.getText().toString();
@@ -219,7 +188,7 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
             values.put("Money", Integer.parseInt(rechargedialogEtMoney.getText().toString()));
             NetUtil.getNetUtil().addRequest("SetCarAccountRecharge", values, Map.class);
         } else {
-            Toast.makeText(fragmentActivity, "ok", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mFragmentActivity, "ok", Toast.LENGTH_SHORT).show();
             onDims();
             initData();
             main();
@@ -227,8 +196,8 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
     }
 
     private void showDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(fragmentActivity);
-        View view = LayoutInflater.from(fragmentActivity).inflate(R.layout.dialog_recharge, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
+        View view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.dialog_recharge, null);
         rechargedialogTvCarIds = (TextView) view.findViewById(R.id.rechargedialog_tv_CarIds);
         rechargedialogEtMoney = (EditText) view.findViewById(R.id.rechargedialog_et_money);
         Button rechargedialogBtnRecharge = (Button) view.findViewById(R.id.rechargedialog_btn_recharge);
@@ -261,7 +230,7 @@ public class BalanceRechargeFragment extends Fragment implements View.OnClickLis
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder = null;
             if (view == null) {
-                view = LayoutInflater.from(fragmentActivity).inflate(R.layout.item_balancerechargelvdata,
+                view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.item_balancerechargelvdata,
                         balancerechargeLvData, false);
                 viewHolder = ViewHolder.get(view);
             } else {

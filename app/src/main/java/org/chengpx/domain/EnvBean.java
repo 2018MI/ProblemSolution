@@ -29,6 +29,11 @@ public class EnvBean {
     public EnvBean() {
     }
 
+    public EnvBean(String senseName, int[] range) {
+        this.senseName = senseName;
+        this.range = range;
+    }
+
     public int getId() {
         return id;
     }

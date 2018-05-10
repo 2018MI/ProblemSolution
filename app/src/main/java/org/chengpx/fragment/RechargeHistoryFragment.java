@@ -1,9 +1,6 @@
 package org.chengpx.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CarBean;
 import org.chengpx.domain.RuleBean;
@@ -30,37 +28,27 @@ import java.util.List;
 /**
  * create at 2018/5/9 17:27 by chengpx
  */
-public class RechargeHistoryFragment extends Fragment implements View.OnClickListener, Comparator<CarBean> {
+public class RechargeHistoryFragment extends BaseFragment implements View.OnClickListener, Comparator<CarBean> {
 
-    private FragmentActivity mFragmentActivity;
     private Spinner rechargehistorySpinnerRulues;
     private Button rechargeBtnSearch;
     private ListView rechargehistoryLvData;
     private RuleBean[] mRuleBeanArr = {
-            new RuleBean("时间升序", "rechargeTime", RuleBean.ASC),
             new RuleBean("时间降序", "rechargeTime", RuleBean.DESC),
+            new RuleBean("时间升序", "rechargeTime", RuleBean.ASC)
     };
     private String[] mRuleArr = {
-            "时间升序", "时间降序"
+            "时间降序", "时间升序"
     };
     private List<CarBean> mCarBeanList;
     private MyAdapter mMyAdapter;
     private DateFormat mDateFormat;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mFragmentActivity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         rechargeBtnSearch.setOnClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rechargehistory, container, false);
         rechargehistorySpinnerRulues = (Spinner) view.findViewById(R.id.rechargehistory_spinner_rulues);
         rechargeBtnSearch = (Button) view.findViewById(R.id.recharge_btn_search);
@@ -68,48 +56,32 @@ public class RechargeHistoryFragment extends Fragment implements View.OnClickLis
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
-    }
-
-    private void onDie() {
+    protected void onDie() {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         rechargehistorySpinnerRulues.setAdapter(new ArrayAdapter<String>(mFragmentActivity,
                 android.R.layout.simple_spinner_item, mRuleArr));
         mMyAdapter = new MyAdapter();
         rechargehistoryLvData.setAdapter(mMyAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        mDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
         mCarBeanList = CarDao.getInstance(mFragmentActivity).select();
+        if (mCarBeanList == null || mCarBeanList.size() == 0) {
+            Toast.makeText(mFragmentActivity, "暂无历史记录", Toast.LENGTH_SHORT).show();
+        } else {
+            rechargehistorySpinnerRulues.setSelection(0);
+            Collections.sort(mCarBeanList, this);
+        }
         if (mMyAdapter != null) {
             mMyAdapter.notifyDataSetChanged();
         }
-        if (mCarBeanList == null || mCarBeanList.size() == 0) {
-            Toast.makeText(mFragmentActivity, "暂无历史记录", Toast.LENGTH_SHORT).show();
-        }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        onDims();
-    }
-
-    private void onDims() {
+    protected void onDims() {
         mDateFormat = null;
     }
 

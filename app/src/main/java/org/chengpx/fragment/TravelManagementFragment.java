@@ -2,9 +2,6 @@ package org.chengpx.fragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CarBean;
 import org.chengpx.domain.GetTrafficLightNowStatusBean;
@@ -36,7 +34,7 @@ import java.util.TimerTask;
 /**
  * 出行管理, 小车单双号管制
  */
-public class TravelManagementFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class TravelManagementFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private String mTag = "org.chengpx.fragment.TravelManagementFragment";
 
@@ -52,25 +50,15 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     };
     private int mReqGetCarMoveIndex;
     private Map<Integer, CarBean> carBeanMap;
-    private FragmentActivity activity;
     private MyAdapter myAdapter;
     private Timer timer;
     private StringBuilder mEnablCarDescSBuilder;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         mTest1TvDate.setOnClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_travelmanager, container, false);
         mTest1TvDate = (TextView) view.findViewById(R.id.test1_tv_date);
         mTest1TvEnablecariddesc = (TextView) view.findViewById(R.id.test1_tv_enablecariddesc);
@@ -81,33 +69,20 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
-    }
-
-    private void onDie() {
+    protected void onDie() {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        calendar = Calendar.getInstance(Locale.CHINA);
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         mTest1TvDate.setText(new SimpleDateFormat("yyyy年MM月dd日").format(calendar.getTime()));
         mTest1TvEnablecariddesc.setText(mEnablCarDescSBuilder.toString());
         myAdapter = new MyAdapter();
         mTest1LvData.setAdapter(myAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
+        calendar = Calendar.getInstance(Locale.CHINA);
         carBeanMap = new HashMap<>();
         mEnablCarDescSBuilder = new StringBuilder();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -149,17 +124,11 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-        onDims();
-    }
-
-    private void onDims() {
+    protected void onDims() {
         timer.cancel();
         timer = null;
         mReqGetCarMoveIndex = 0;
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -218,7 +187,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     }
 
     private void showDialog() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(activity,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(mFragmentActivity,
                 this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
@@ -285,7 +254,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder = null;
             if (view == null) {
-                view = LayoutInflater.from(activity).inflate(R.layout.item_test1_lv_data,
+                view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.item_test1_lv_data,
                         mTest1LvData, false);
                 viewHolder = new ViewHolder(view);
                 view.setTag(viewHolder);
