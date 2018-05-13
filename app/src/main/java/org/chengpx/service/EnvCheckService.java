@@ -126,6 +126,7 @@ public class EnvCheckService extends Service {
 
     public static boolean isRunning(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+        assert activityManager != null;
         List<ActivityManager.RunningServiceInfo> runningServiceInfoList = activityManager.getRunningServices(1000);
         for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServiceInfoList) {
             if (EnvCheckService.class.getName().equals(runningServiceInfo.service.getClassName())) {

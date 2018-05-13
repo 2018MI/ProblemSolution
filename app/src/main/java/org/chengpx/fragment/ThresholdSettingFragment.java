@@ -111,6 +111,7 @@ public class ThresholdSettingFragment extends BaseFragment implements View.OnCli
             Toast.makeText(mFragmentActivity, "请先关闭自动报警", Toast.LENGTH_SHORT).show();
             return;
         }
+        int count = 0;
         for (int index = 0; index < mEditTextArr.length; index++) {
             String str = mEditTextArr[index].getText().toString();
             if (TextUtils.isEmpty(str)) {
@@ -127,8 +128,11 @@ public class ThresholdSettingFragment extends BaseFragment implements View.OnCli
                 return;
             }
             SpUtils.getInstance(mFragmentActivity).putInt(mEnvBeanArr[index].getSenseName(), val);
+            count++;
         }
-        Toast.makeText(mFragmentActivity, "ok", Toast.LENGTH_SHORT).show();
+        if (count != 0) {
+            Toast.makeText(mFragmentActivity, "ok", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

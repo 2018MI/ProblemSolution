@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ProlenSolution</string>
+    <string name="language_setting">language setting</string>
+    <string name="login">login</string>
+</resources>

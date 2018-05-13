@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test36_gridview_weatherdata_ll_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/test36_gridview_weatherdata_tv_date"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="日期时间"
+        android:textColor="#ffff" />
+
+    <ImageView
+        android:id="@+id/test36_gridview_weatherdata_iv_weather"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:src="@drawable/qing" />
+
+    <TextView
+        android:id="@+id/test36_gridview_weatherdata_tv_weather"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="晴"
+        android:textColor="#ffff" />
+
+    <TextView
+        android:id="@+id/test36_gridview_weatherdata_tv_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="温度范围"
+        android:textColor="#ffff" />
+
+</LinearLayout>

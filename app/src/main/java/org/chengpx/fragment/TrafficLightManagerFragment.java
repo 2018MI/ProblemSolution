@@ -37,6 +37,7 @@ import java.util.TimerTask;
 public class TrafficLightManagerFragment extends BaseFragment implements AdapterView.OnItemSelectedListener, Comparator<Integer> {
 
     private String mTag = "org.chengpx.fragment.TrafficLightManagerFragment";
+
     private ImageView trafficlightmanagerIvRedlight;
     private ImageView trafficlightmanagerIvYellowlight;
     private ImageView trafficlightmanagerIvGreenlight;

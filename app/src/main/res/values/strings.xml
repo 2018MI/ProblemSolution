@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">题目解决方案</string>
+    <string name="language_setting">语言设置</string>
+    <string name="login">登录</string>
 </resources>
