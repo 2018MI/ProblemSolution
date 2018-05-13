@@ -7,8 +7,6 @@ import android.widget.GridView;
 /**
  * create at 2018/5/12 8:14 by chengpx
  */
-
-///
 public class MyGridView extends GridView {
 
     private boolean mIsMeasure;
