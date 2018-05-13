@@ -1,24 +1,25 @@
 package org.chengpx;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Toast;
 
-/**
- * create at 2018/5/10 15:11 by chengpx
- */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements Runnable {
 
     protected FragmentActivity mFragmentActivity;
+    private AlertDialog mCurrentDialog;
 
     @Nullable
     @Override
-    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mFragmentActivity = getActivity();
         View view = initView(inflater, container, savedInstanceState);
         initListener();
@@ -44,10 +45,9 @@ public abstract class BaseFragment extends Fragment {
         main();
     }
 
-    protected abstract void initData();
-
     protected abstract void main();
 
+    protected abstract void initData();
 
     @Override
     public final void onPause() {
@@ -57,5 +57,36 @@ public abstract class BaseFragment extends Fragment {
 
     protected abstract void onDims();
 
+    public void showToast(String msg) {
+        Toast.makeText(mFragmentActivity, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public AlertDialog showDialog(View view) {
+        if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
+            mCurrentDialog.dismiss();
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
+        AlertDialog alertDialog = builder.create();
+        Window window = alertDialog.getWindow();
+        assert window != null;
+        //window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alertDialog.show();
+        if (view == null) {
+            view = View.inflate(mFragmentActivity, R.layout.dialog_loading, null);
+        }
+        window.setContentView(view);
+        window.setGravity(Gravity.CENTER);
+        mCurrentDialog = alertDialog;
+        view.postDelayed(this, 2000);
+        return alertDialog;
+    }
+
+    @Override
+    public void run() {
+        if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
+            mCurrentDialog.dismiss();
+        }
+    }
 
 }
+

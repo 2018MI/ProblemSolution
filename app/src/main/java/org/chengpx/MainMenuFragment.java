@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.chengpx.fragment.BalanceRechargeFragment;
+import org.chengpx.fragment.CarSpeedListenerFragment;
 import org.chengpx.fragment.EnvFragment;
 import org.chengpx.fragment.MyEtcFragment;
 import org.chengpx.fragment.RoadStatusQueryFragment;
@@ -32,12 +33,12 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private ListView mainmenuLvItems;
     private String[] mItemStrArr = {
             "道路环境", "etc账户充值", "红绿灯管理", "etc管理", "小车单双号管制", "阈值设置", "路况查询",
-            "天气信息", "地铁路线查看"
+            "天气信息", "地铁路线查看", "小车车速监控"
     };
     private Fragment[] mFragmentArr = {
             new EnvFragment(), new BalanceRechargeFragment(), new TrafficLightManagerFragment(),
             new MyEtcFragment(), new TravelManagementFragment(), new ThresholdSettingFragment(),
-            new RoadStatusQueryFragment(), new Test36Fragment(), new SubwayFragment()
+            new RoadStatusQueryFragment(), new Test36Fragment(), new SubwayFragment(), new CarSpeedListenerFragment()
     };
 
     @Override

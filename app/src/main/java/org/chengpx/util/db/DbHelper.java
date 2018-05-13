@@ -9,6 +9,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import org.chengpx.domain.CarBean;
+import org.chengpx.domain.CaroverspeedhistoryBean;
 import org.chengpx.domain.EnvBean;
 
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.createTable(connectionSource, EnvBean.class);
             TableUtils.createTable(connectionSource, CarBean.class);
+            TableUtils.createTable(connectionSource, CaroverspeedhistoryBean.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }

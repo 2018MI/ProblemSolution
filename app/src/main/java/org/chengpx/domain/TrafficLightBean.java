@@ -5,17 +5,37 @@ package org.chengpx.domain;
  */
 public class TrafficLightBean {
 
-
     /**
      * RedTime : 25
      * GreenTime : 55
      * YellowTime : 5
      */
-
     private String RedTime;
     private String GreenTime;
     private String YellowTime;
     private Integer RoadId;
+    /**
+     * Status : Red
+     * Time : 8
+     */
+    private String Status;
+    private int Time;
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String Status) {
+        this.Status = Status;
+    }
+
+    public int getTime() {
+        return Time;
+    }
+
+    public void setTime(int Time) {
+        this.Time = Time;
+    }
 
     public String getRedTime() {
         return RedTime;

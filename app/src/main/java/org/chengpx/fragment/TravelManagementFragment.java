@@ -17,7 +17,7 @@ import android.widget.TextView;
 import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CarBean;
-import org.chengpx.domain.GetTrafficLightNowStatusBean;
+import org.chengpx.domain.TrafficLightBean;
 import org.chengpx.util.net.NetUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -157,8 +157,8 @@ public class TravelManagementFragment extends BaseFragment implements CompoundBu
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getTrafficLightNowStatus(GetTrafficLightNowStatusBean getTrafficLightNowStatusBean) {
-        switch (getTrafficLightNowStatusBean.getStatus()) {
+    public void getTrafficLightNowStatus(TrafficLightBean trafficLightBean) {
+        switch (trafficLightBean.getStatus()) {
             case "Red":
                 mTest1IvRedlight.setImageResource(R.drawable.shape_oval_red);
                 mTest1IvYellowlight.setImageResource(R.drawable.shape_oval_gray);
@@ -285,7 +285,7 @@ public class TravelManagementFragment extends BaseFragment implements CompoundBu
             Map<String, Integer> values = new HashMap<>();
             values.put("TrafficLightId", 1);
             NetUtil.getNetUtil().addRequest("GetTrafficLightNowStatus.do", values,
-                    GetTrafficLightNowStatusBean.class);
+                    TrafficLightBean.class);
         }
     }
 }

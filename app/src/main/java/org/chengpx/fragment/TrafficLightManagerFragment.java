@@ -1,7 +1,6 @@
 package org.chengpx.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 import org.chengpx.BaseFragment;
 import org.chengpx.R;
-import org.chengpx.domain.GetTrafficLightNowStatusBean;
 import org.chengpx.domain.RuleBean;
 import org.chengpx.domain.TrafficLightBean;
 import org.chengpx.util.net.NetUtil;
@@ -121,9 +119,8 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getTrafficLightNowStatus(GetTrafficLightNowStatusBean getTrafficLightNowStatusBean) {
-        Log.d(mTag, getTrafficLightNowStatusBean.toString());
-        switch (getTrafficLightNowStatusBean.getStatus()) {
+    public void getTrafficLightNowStatus(Map<String, Object> map) {
+        switch ((String) map.get("Status")) {
             case "Red":
                 trafficlightmanagerIvRedlight.setImageResource(R.drawable.shape_oval_red);
                 trafficlightmanagerIvYellowlight.setImageResource(R.drawable.shape_oval_gray);
@@ -240,7 +237,7 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
         public void run() {
             Map<String, Integer> values = new HashMap<>();
             values.put("TrafficLightId", 1);
-            NetUtil.getNetUtil().addRequest("GetTrafficLightNowStatus.do", values, GetTrafficLightNowStatusBean.class);
+            NetUtil.getNetUtil().addRequest("GetTrafficLightNowStatus.do", values, Map.class);
         }
     }
 

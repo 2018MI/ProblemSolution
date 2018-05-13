@@ -7,9 +7,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AllSenseBean {
 
-
     @SerializedName("pm2.5")
-    private int _$Pm25171; // FIXME check this code
+    private int _$Pm25171;
     private int co2;
     private int LightIntensity;
     private int humidity;

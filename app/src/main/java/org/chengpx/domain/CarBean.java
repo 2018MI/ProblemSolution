@@ -5,7 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-@DatabaseTable(tableName = "car")
+@DatabaseTable(tableName = "car_recharge_history")
 public class CarBean {
 
     @DatabaseField(generatedId = true)

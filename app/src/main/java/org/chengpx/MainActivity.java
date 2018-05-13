@@ -6,6 +6,8 @@ import android.view.WindowManager;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
+import org.chengpx.service.CarSpeedListenerService;
+
 public class MainActivity extends SlidingFragmentActivity {
 
     @Override
@@ -28,6 +30,7 @@ public class MainActivity extends SlidingFragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        CarSpeedListenerService.start(this);
         initData();
         main();
     }
@@ -42,6 +45,7 @@ public class MainActivity extends SlidingFragmentActivity {
     protected void onPause() {
         super.onPause();
         onDims();
+        CarSpeedListenerService.stop(this);
     }
 
     private void onDims() {

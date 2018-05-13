@@ -5,8 +5,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-@DatabaseTable(tableName = "Env")
+@DatabaseTable(tableName = "env")
 public class EnvBean {
+
     @DatabaseField(generatedId = true)
     private int id;
     @DatabaseField(columnName = "DateTime")
@@ -15,10 +16,10 @@ public class EnvBean {
     private String senseName;
     @DatabaseField(columnName = "senseDesc")
     private String senseDesc;
-    @DatabaseField(persisted = false)
-    private int[] range;
     @DatabaseField(columnName = "val")
     private Integer val;
+    @DatabaseField(persisted = false)
+    private int[] range;
     @DatabaseField(persisted = false)
     private String unit;
 
