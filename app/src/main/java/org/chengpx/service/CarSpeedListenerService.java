@@ -3,11 +3,12 @@ package org.chengpx.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import org.chengpx.BaseService;
 import org.chengpx.domain.CaroverspeedhistoryBean;
+import org.chengpx.fragment.CarSpeedListenerFragment;
 import org.chengpx.util.SpUtils;
 import org.chengpx.util.db.CaroverspeedhistoryBeanDao;
 import org.chengpx.util.net.NetUtil;
@@ -23,7 +24,7 @@ import java.util.TimerTask;
 
 public class CarSpeedListenerService extends BaseService {
 
-    private static int sCar_speed_yuzhi;
+    private int mCar_speed_yuzhi;
     private Timer mTimer;
     private CaroverspeedhistoryBean[] mCaroverspeedhistoryBeanArr = {
             new CaroverspeedhistoryBean(1), new CaroverspeedhistoryBean(2), new CaroverspeedhistoryBean(3), new CaroverspeedhistoryBean(4)
@@ -31,13 +32,17 @@ public class CarSpeedListenerService extends BaseService {
     private int mReqGetCarSpeedIndex;
     private CaroverspeedhistoryBeanDao mCaroverspeedhistoryBeanDao;
     private String mTag = getClass().getName();
-    private AlertDialog mAlertDialog;
+    private CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver mCarSpeedListenerFragmentBroadcastReceiver;
 
     @Override
     protected void init() {
         EventBus.getDefault().register(this);
+        mCarSpeedListenerFragmentBroadcastReceiver = new CarSpeedListenerFragment().new CarSpeedListenerFragmentBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver.class.getName());
+        registerReceiver(mCarSpeedListenerFragmentBroadcastReceiver, intentFilter);
         mCaroverspeedhistoryBeanDao = CaroverspeedhistoryBeanDao.getInstance(this);
-        sCar_speed_yuzhi = SpUtils.getInstance(this).getInt("car_speed_yuzhi", 60);
+        mCar_speed_yuzhi = SpUtils.getInstance(this).getInt("car_speed_yuzhi", 60);
         mTimer = new Timer();
         mTimer.schedule(new MyTimerTask(), 0, 1000 * 10);
     }
@@ -47,7 +52,8 @@ public class CarSpeedListenerService extends BaseService {
         mTimer.cancel();
         mTimer = null;
         mReqGetCarSpeedIndex = 0;
-        sCar_speed_yuzhi = 60;
+        mCar_speed_yuzhi = 60;
+        unregisterReceiver(mCarSpeedListenerFragmentBroadcastReceiver);
         EventBus.getDefault().unregister(this);
     }
 
@@ -62,7 +68,7 @@ public class CarSpeedListenerService extends BaseService {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetCarSpeed(CaroverspeedhistoryBean caroverspeedhistoryBean) {
         Integer carSpeed = caroverspeedhistoryBean.getCarSpeed();
-        if (carSpeed > sCar_speed_yuzhi) {
+        if (carSpeed > mCar_speed_yuzhi) {
             CaroverspeedhistoryBean localCaroverspeedhistoryBean = mCaroverspeedhistoryBeanArr[mReqGetCarSpeedIndex];
             localCaroverspeedhistoryBean.setCarSpeed(carSpeed);
             localCaroverspeedhistoryBean.setOverSpeedDateTime(new Date());
@@ -77,7 +83,7 @@ public class CarSpeedListenerService extends BaseService {
             NetUtil.getNetUtil().addRequest("GetCarSpeed", values, CaroverspeedhistoryBean.class);
         } else {
             Intent intent = new Intent();
-            intent.setAction("CarSpeedListenerFragmentBroadcastReceiver");
+            intent.setAction(CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver.class.getName());
             sendBroadcast(intent);
         }
     }
@@ -92,11 +98,11 @@ public class CarSpeedListenerService extends BaseService {
         }
     }
 
-    public static class CarSpeedListenerServiceBroadcastReceiver extends BroadcastReceiver {
+    public class CarSpeedListenerServiceBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            sCar_speed_yuzhi = SpUtils.getInstance(context).getInt("car_speed_yuzhi", 60);
+            mCar_speed_yuzhi = SpUtils.getInstance(context).getInt("car_speed_yuzhi", 60);
         }
     }
 

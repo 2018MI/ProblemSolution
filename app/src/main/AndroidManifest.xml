@@ -25,17 +25,6 @@
         <service android:name=".service.EnvCheckService" />
         <service android:name=".service.CarSpeedListenerService" />
 
-        <receiver android:name=".fragment.CarSpeedListenerFragment$CarSpeedListenerFragmentBroadcastReceiver">
-            <intent-filter>
-                <action android:name="CarSpeedListenerFragmentBroadcastReceiver"/>
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".service.CarSpeedListenerService$CarSpeedListenerServiceBroadcastReceiver">
-            <intent-filter>
-                <action android:name="CarSpeedListenerServiceBroadcastReceiver"/>
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>

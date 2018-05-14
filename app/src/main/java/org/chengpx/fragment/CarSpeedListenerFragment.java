@@ -3,6 +3,7 @@ package org.chengpx.fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import org.chengpx.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CaroverspeedhistoryBean;
 import org.chengpx.domain.RuleBean;
+import org.chengpx.service.CarSpeedListenerService;
 import org.chengpx.util.SpUtils;
 import org.chengpx.util.db.CaroverspeedhistoryBeanDao;
 
@@ -31,8 +33,8 @@ import java.util.List;
 
 public class CarSpeedListenerFragment extends BaseFragment implements View.OnClickListener, Comparator<CaroverspeedhistoryBean> {
 
-    private static List<CaroverspeedhistoryBean> sCaroverspeedhistoryBeanList;
-    private static BaseAdapter sAdapter;
+    private List<CaroverspeedhistoryBean> mCaroverspeedhistoryBeanList;
+    private BaseAdapter mAdapter;
     private TextView mCarspeedlistenerTvShowyuzhi;
     private EditText mCarspeedlistenerEtYuzhi;
     private Button mCarspeedlistenerBtnSetyuzhi;
@@ -48,6 +50,7 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
             new RuleBean("时间降序", "overSpeedDateTime", RuleBean.DESC),
             new RuleBean("时间升序", "overSpeedDateTime", RuleBean.ASC)
     };
+    private CarSpeedListenerService.CarSpeedListenerServiceBroadcastReceiver mCarSpeedListenerServiceBroadcastReceiver;
 
     @Override
     protected void initListener() {
@@ -69,7 +72,6 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
 
     @Override
     protected void onDie() {
-
     }
 
     @Override
@@ -78,29 +80,34 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
         mCarspeedlistenerSpinnerRules.setAdapter(new ArrayAdapter<String>(
                 mFragmentActivity, android.R.layout.simple_spinner_item, mRuleArr
         ));
-        sAdapter = new MyAaapter();
-        mCarspeedlistenerLvData.setAdapter(sAdapter);
+        mAdapter = new MyAaapter();
+        mCarspeedlistenerLvData.setAdapter(mAdapter);
     }
 
     @Override
     protected void initData() {
+        mCarSpeedListenerServiceBroadcastReceiver = new CarSpeedListenerService().new CarSpeedListenerServiceBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(CarSpeedListenerService.CarSpeedListenerServiceBroadcastReceiver.class.getName());
+        mFragmentActivity.registerReceiver(mCarSpeedListenerServiceBroadcastReceiver, intentFilter);
         mSpUtils = SpUtils.getInstance(mFragmentActivity);
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
     protected void onDims() {
-        sAdapter = null;
-        sCaroverspeedhistoryBeanList = null;
+        mAdapter = null;
+        mCaroverspeedhistoryBeanList = null;
+        mFragmentActivity.unregisterReceiver(mCarSpeedListenerServiceBroadcastReceiver);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.carspeedlistener_btn_query:
-                Collections.sort(sCaroverspeedhistoryBeanList, this);
-                if (sAdapter != null) {
-                    sAdapter.notifyDataSetChanged();
+                Collections.sort(mCaroverspeedhistoryBeanList, this);
+                if (mAdapter != null) {
+                    mAdapter.notifyDataSetChanged();
                 }
                 break;
             case R.id.carspeedlistener_btn_setyuzhi:
@@ -123,7 +130,7 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
         mSpUtils.putInt("car_speed_yuzhi", yuzhi);
         mCarspeedlistenerTvShowyuzhi.setText("我的1-4号小车车辆速度警告阈值:" + yuzhi + "km/h");
         Intent intent = new Intent();
-        intent.setAction("CarSpeedListenerServiceBroadcastReceiver");
+        intent.setAction(CarSpeedListenerService.CarSpeedListenerServiceBroadcastReceiver.class.getName());
         mFragmentActivity.sendBroadcast(intent);
     }
 
@@ -148,13 +155,13 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
         return 0;
     }
 
-    public static class CarSpeedListenerFragmentBroadcastReceiver extends BroadcastReceiver {
+    public class CarSpeedListenerFragmentBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            sCaroverspeedhistoryBeanList =  CaroverspeedhistoryBeanDao.getInstance(context).select();
-            if (sAdapter != null) {
-                sAdapter.notifyDataSetChanged();
+            mCaroverspeedhistoryBeanList = CaroverspeedhistoryBeanDao.getInstance(context).select();
+            if (mAdapter != null) {
+                mAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -162,12 +169,12 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
     private class MyAaapter extends BaseAdapter {
         @Override
         public int getCount() {
-            return sCaroverspeedhistoryBeanList == null ? 0 : sCaroverspeedhistoryBeanList.size();
+            return mCaroverspeedhistoryBeanList == null ? 0 : mCaroverspeedhistoryBeanList.size();
         }
 
         @Override
         public CaroverspeedhistoryBean getItem(int i) {
-            return sCaroverspeedhistoryBeanList.get(i);
+            return mCaroverspeedhistoryBeanList.get(i);
         }
 
         @Override
@@ -183,7 +190,7 @@ public class CarSpeedListenerFragment extends BaseFragment implements View.OnCli
                         mCarspeedlistenerLvData, false);
                 viewHolder = new ViewHolder(view);
                 view.setTag(viewHolder);
-            }  else {
+            } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
             CaroverspeedhistoryBean caroverspeedhistoryBean = getItem(i);
