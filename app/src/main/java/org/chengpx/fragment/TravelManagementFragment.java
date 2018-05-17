@@ -1,10 +1,8 @@
 package org.chengpx.fragment;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +16,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.chengpx.R;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.domain.CarBean;
 import org.chengpx.domain.TrafficLightBean;
 import org.chengpx.util.net.NetUtil;
@@ -36,7 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class TravelManagementFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
+public class TravelManagementFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     private String mTag = getClass().getName();
 
@@ -55,25 +54,18 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     };
     private int mReqGetCarMoveIndex;
     private Map<Integer, CarBean> carBeanMap;
-    private FragmentActivity activity;
     private MyAdapter myAdapter;
     private Timer timer;
     private DatePickerDialog datePickerDialog;
+    private ProgressDialog mCarActionLoadDialog;
+    private ProgressDialog mTrafficStatusLoadDialog;
+    private ProgressDialog mCarActionSetDialog;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         mTest1TvDate.setOnClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_travelmanagement, container, false);
         mTest1TvDate = (TextView) view.findViewById(R.id.test1_tv_date);
         mTest1TvEnablecariddesc = (TextView) view.findViewById(R.id.test1_tv_enablecariddesc);
@@ -85,26 +77,11 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
-    }
-
-    private void onDie() {
+    protected void onDie() {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        calendar = Calendar.getInstance(Locale.CHINA);
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         mTest1TvDate.setText(new SimpleDateFormat("yyyy年MM月dd日").format(calendar.getTime()));
         mTest1TvEnablecariddesc.setText(enableCarDesc);
         mTest1TvEnablecarids
@@ -113,7 +90,9 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         mTest1LvData.setAdapter(myAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
+        calendar = Calendar.getInstance(Locale.CHINA);
         carBeanMap = new HashMap<>();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         if (day % 2 == 0) {// 双号
@@ -134,8 +113,10 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         Map<String, Integer> values = new HashMap<>();
         values.put("CarId", mCarBeanArr[mReqGetCarMoveIndex].getCarId());
         NetUtil.getNetUtil().addRequest("GetCarMove.do", values, CarBean.class);
+        mCarActionLoadDialog = showLoadingDialog("小车状态查询", "");
         timer = new Timer();
         timer.schedule(new MyTimerTask(), 0, 3000);
+        mTrafficStatusLoadDialog = showLoadingDialog("红绿灯状态查询", "");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -149,20 +130,18 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
             values.put("CarId", mCarBeanArr[mReqGetCarMoveIndex].getCarId());
             NetUtil.getNetUtil().addRequest("GetCarMove.do", values, CarBean.class);
         } else {
+            if (mCarActionLoadDialog != null) {
+                mCarActionLoadDialog.dismiss();
+                mCarActionLoadDialog = null;
+            }
             if (myAdapter != null) {
                 myAdapter.notifyDataSetChanged();
             }
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    protected void onDims() {
         EventBus.getDefault().unregister(this);
-        onDims();
-    }
-
-    private void onDims() {
         timer.cancel();
         timer = null;
         mReqGetCarMoveIndex = 0;
@@ -182,11 +161,15 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
             values.put("CarAction", "Stop");
         }
         NetUtil.getNetUtil().addRequest("SetCarMove", values, Map.class);
+        mCarActionSetDialog = showLoadingDialog("小车动作设置", "");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void setCarMove(Map<String, String> map) {
-        System.out.println();
+        if (mCarActionSetDialog != null) {
+            mCarActionSetDialog.dismiss();
+            mCarActionSetDialog = null;
+        }
         mReqGetCarMoveIndex = 0;
         Map<String, Integer> values = new HashMap<>();
         values.put("CarId", mCarBeanArr[mReqGetCarMoveIndex].getCarId());
@@ -195,6 +178,10 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getTrafficLightNowStatus(TrafficLightBean trafficlightBean) {
+        if (mTrafficStatusLoadDialog != null) {
+            mTrafficStatusLoadDialog.dismiss();
+            mTrafficStatusLoadDialog = null;
+        }
         switch (trafficlightBean.getStatus()) {
             case "Red":
                 mTest1IvRedlight.setImageResource(R.drawable.shape_oval_red);
@@ -224,7 +211,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     }
 
     private void showDialog() {
-        datePickerDialog = new DatePickerDialog(activity,
+        datePickerDialog = new DatePickerDialog(mFragmentActivity,
                 this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
@@ -290,7 +277,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder = null;
             if (view == null) {
-                view = LayoutInflater.from(activity).inflate(R.layout.item_test1_lv_data,
+                view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.item_test1_lv_data,
                         mTest1LvData, false);
                 viewHolder = new ViewHolder(view);
                 view.setTag(viewHolder);
