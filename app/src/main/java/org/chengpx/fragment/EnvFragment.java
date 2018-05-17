@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;

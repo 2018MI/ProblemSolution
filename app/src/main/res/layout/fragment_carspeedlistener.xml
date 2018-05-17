@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="我的1-4号小车车辆速度警告阈值:-1km/h" />
+        android:text="我的1-4号车车辆速度告警阈值:-1km/h"
+        android:textSize="25sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +25,9 @@
             android:id="@+id/carspeedlistener_et_yuzhi"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:inputType="number"
+            android:singleLine="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,7 +49,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="车辆超速查询" />
+            android:text="车辆超速查询: " />
 
         <Spinner
             android:id="@+id/carspeedlistener_spinner_rules"
@@ -88,7 +91,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="超速时间" />
+            android:text="时间" />
 
     </LinearLayout>
 

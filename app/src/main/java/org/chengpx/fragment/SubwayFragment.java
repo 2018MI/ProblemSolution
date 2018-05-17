@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 
 /**

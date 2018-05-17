@@ -5,31 +5,31 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/carspeedlistener_tv_lvnum"
+        android:id="@+id/carspeedlistener_tv_num"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="序号" />
 
     <TextView
-        android:id="@+id/carspeedlistener_tv_lvcarid"
+        android:id="@+id/carspeedlistener_tv_carid"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="车号" />
 
     <TextView
-        android:id="@+id/carspeedlistener_tv_lvcarspeed"
+        android:id="@+id/carspeedlistener_tv_carspeed"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="速度" />
 
     <TextView
-        android:id="@+id/carspeedlistener_tv_lvoverspeeddatetime"
+        android:id="@+id/carspeedlistener_tv_overSpeedDateTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="超速时间" />
+        android:text="时间" />
 
 </LinearLayout>

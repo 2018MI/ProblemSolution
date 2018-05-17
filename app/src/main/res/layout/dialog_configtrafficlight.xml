@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffffff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="配置设置" />
+
+        <ImageButton
+            android:id="@+id/myroadstatus_ibtn_cancel"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="end"
+            android:background="@drawable/shape_oval_red" />
+
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="50dp"
+        android:stretchColumns="1">
+
+        <TableRow>
+
+            <TextView android:text="红灯:" />
+
+            <EditText
+                android:id="@+id/myroadstatus_et_redtime"
+                android:inputType="number"
+                android:singleLine="true" />
+
+            <TextView android:text="秒" />
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView android:text="黄灯:" />
+
+            <EditText
+                android:id="@+id/myroadstatus_et_yellowtime"
+                android:inputType="number"
+                android:singleLine="true" />
+
+            <TextView android:text="秒" />
+
+        </TableRow>
+
+
+        <TableRow>
+
+            <TextView android:text="绿灯:" />
+
+            <EditText
+                android:id="@+id/myroadstatus_et_greentime"
+                android:inputType="number"
+                android:singleLine="true" />
+
+            <TextView android:text="秒" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/myroadstatus_btn_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+            android:text="确定" />
+
+        <Button
+            android:id="@+id/myroadstatus_btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消" />
+
+    </LinearLayout>
+
+</LinearLayout>

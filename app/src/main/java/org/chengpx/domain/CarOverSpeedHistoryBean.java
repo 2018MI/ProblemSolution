@@ -5,8 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-@DatabaseTable(tableName = "caroverspeedhistory")
-public class CaroverspeedhistoryBean {
+@DatabaseTable(tableName = "CarOverSpeedHistory")
+public class CarOverSpeedHistoryBean {
 
     @DatabaseField(generatedId = true)
     private Integer id;
@@ -17,11 +17,11 @@ public class CaroverspeedhistoryBean {
     @DatabaseField(columnName = "overSpeedDateTime")
     private Date overSpeedDateTime;
 
-    public CaroverspeedhistoryBean() {
+    public CarOverSpeedHistoryBean(Integer carId) {
+        CarId = carId;
     }
 
-    public CaroverspeedhistoryBean(Integer carId) {
-        CarId = carId;
+    public CarOverSpeedHistoryBean() {
     }
 
     public Integer getId() {

@@ -1,4 +1,4 @@
-package org.chengpx;
+package org.chengpx.base;
 
 import android.app.AlertDialog;
 import android.app.Service;
@@ -9,14 +9,17 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
+
+import org.chengpx.R;
 
 public abstract class BaseService extends Service implements Runnable {
 
-    private AlertDialog mCurrentDialog;
+    protected AlertDialog mCurrentDialog;
 
     @Nullable
     @Override
-    public final IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
@@ -32,14 +35,15 @@ public abstract class BaseService extends Service implements Runnable {
     public final void onDestroy() {
         super.onDestroy();
         onDie();
-        if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
-            mCurrentDialog.dismiss();
-        }
     }
 
     protected abstract void onDie();
 
-    public AlertDialog showDialog(View view) {
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public View showDialog(View view) {
         if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
             mCurrentDialog.dismiss();
         }
@@ -47,16 +51,16 @@ public abstract class BaseService extends Service implements Runnable {
         AlertDialog alertDialog = builder.create();
         Window window = alertDialog.getWindow();
         assert window != null;
+        window.setGravity(Gravity.CENTER);
         window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
         if (view == null) {
-            view = View.inflate(this, R.layout.dialog_loading, null);
+            view = View.inflate(this, R.layout.dialog_warn, null);
         }
-        window.setContentView(view);
-        window.setGravity(Gravity.CENTER);
+        alertDialog.setContentView(view);
         mCurrentDialog = alertDialog;
         view.postDelayed(this, 2000);
-        return alertDialog;
+        return view;
     }
 
     @Override
@@ -65,5 +69,4 @@ public abstract class BaseService extends Service implements Runnable {
             mCurrentDialog.dismiss();
         }
     }
-
 }

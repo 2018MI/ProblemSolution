@@ -1,16 +1,16 @@
 package org.chengpx.service;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
-import org.chengpx.BaseService;
-import org.chengpx.domain.CaroverspeedhistoryBean;
-import org.chengpx.fragment.CarSpeedListenerFragment;
+import org.chengpx.base.BaseService;
+import org.chengpx.R;
+import org.chengpx.domain.CarOverSpeedHistoryBean;
 import org.chengpx.util.SpUtils;
-import org.chengpx.util.db.CaroverspeedhistoryBeanDao;
+import org.chengpx.util.db.CarOverSpeedHistoryDao;
 import org.chengpx.util.net.NetUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,29 +22,26 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 public class CarSpeedListenerService extends BaseService {
 
-    private int mCar_speed_yuzhi;
-    private Timer mTimer;
-    private CaroverspeedhistoryBean[] mCaroverspeedhistoryBeanArr = {
-            new CaroverspeedhistoryBean(1), new CaroverspeedhistoryBean(2), new CaroverspeedhistoryBean(3), new CaroverspeedhistoryBean(4)
+    private CarOverSpeedHistoryBean[] mCarOverSpeedHistoryBeanArr = {
+            new CarOverSpeedHistoryBean(1), new CarOverSpeedHistoryBean(2),
+            new CarOverSpeedHistoryBean(3), new CarOverSpeedHistoryBean(4)
     };
+    private Timer mTimer;
     private int mReqGetCarSpeedIndex;
-    private CaroverspeedhistoryBeanDao mCaroverspeedhistoryBeanDao;
+    private SpUtils mSpUtils;
+    private CarOverSpeedHistoryDao mCarOverSpeedHistoryDao;
     private String mTag = getClass().getName();
-    private CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver mCarSpeedListenerFragmentBroadcastReceiver;
 
     @Override
     protected void init() {
         EventBus.getDefault().register(this);
-        mCarSpeedListenerFragmentBroadcastReceiver = new CarSpeedListenerFragment().new CarSpeedListenerFragmentBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver.class.getName());
-        registerReceiver(mCarSpeedListenerFragmentBroadcastReceiver, intentFilter);
-        mCaroverspeedhistoryBeanDao = CaroverspeedhistoryBeanDao.getInstance(this);
-        mCar_speed_yuzhi = SpUtils.getInstance(this).getInt("car_speed_yuzhi", 60);
+        mSpUtils = SpUtils.getInstance(this);
+        mCarOverSpeedHistoryDao = CarOverSpeedHistoryDao.getInstance(this);
         mTimer = new Timer();
-        mTimer.schedule(new MyTimerTask(), 0, 1000 * 10);
+        mTimer.schedule(new MyTimerTask(), 0, 1000 * 30);
     }
 
     @Override
@@ -52,38 +49,41 @@ public class CarSpeedListenerService extends BaseService {
         mTimer.cancel();
         mTimer = null;
         mReqGetCarSpeedIndex = 0;
-        mCar_speed_yuzhi = 60;
-        unregisterReceiver(mCarSpeedListenerFragmentBroadcastReceiver);
+        mSpUtils = null;
+        mCarOverSpeedHistoryDao = null;
         EventBus.getDefault().unregister(this);
-    }
-
-    public static void start(Context context) {
-        context.startService(new Intent(context, CarSpeedListenerService.class));
     }
 
     public static void stop(Context context) {
         context.stopService(new Intent(context, CarSpeedListenerService.class));
     }
 
+    public static void start(Context context) {
+        context.startService(new Intent(context, CarSpeedListenerService.class));
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void GetCarSpeed(CaroverspeedhistoryBean caroverspeedhistoryBean) {
-        Integer carSpeed = caroverspeedhistoryBean.getCarSpeed();
-        if (carSpeed > mCar_speed_yuzhi) {
-            CaroverspeedhistoryBean localCaroverspeedhistoryBean = mCaroverspeedhistoryBeanArr[mReqGetCarSpeedIndex];
-            localCaroverspeedhistoryBean.setCarSpeed(carSpeed);
-            localCaroverspeedhistoryBean.setOverSpeedDateTime(new Date());
-            int insert = mCaroverspeedhistoryBeanDao.insert(localCaroverspeedhistoryBean);
-            Log.d(mTag, "CaroverspeedhistoryBeanDao insert; " + insert);
-            showDialog(null);
+    public void GetCarSpeed(CarOverSpeedHistoryBean carOverSpeedHistoryBean) {
+        int car_overspeed_yuzhi = mSpUtils.getInt("car_overspeed_yuzhi", 60);
+        Integer carSpeed = carOverSpeedHistoryBean.getCarSpeed();
+        if (carSpeed > car_overspeed_yuzhi) {
+            CarOverSpeedHistoryBean localCarOverSpeedHistoryBean = mCarOverSpeedHistoryBeanArr[mReqGetCarSpeedIndex];
+            localCarOverSpeedHistoryBean.setCarSpeed(carSpeed);
+            localCarOverSpeedHistoryBean.setOverSpeedDateTime(new Date());
+            int insert = mCarOverSpeedHistoryDao.insert(localCarOverSpeedHistoryBean);
+            Log.d(mTag, "CarOverSpeedHistoryDao insert: " + insert);
+            View view = showDialog(null);
+            TextView basefragment_tv_dialogcontent = (TextView) view.findViewById(R.id.basefragment_tv_dialogcontent);
+            basefragment_tv_dialogcontent.setText(localCarOverSpeedHistoryBean.getCarId() + "号小车超速,当前速度:" + carSpeed + "速度阈值:" + car_overspeed_yuzhi);
         }
         mReqGetCarSpeedIndex++;
-        if (mReqGetCarSpeedIndex < mCaroverspeedhistoryBeanArr.length) {
+        if (mReqGetCarSpeedIndex < mCarOverSpeedHistoryBeanArr.length) {
             Map<String, Integer> values = new HashMap<>();
-            values.put("CarId", mCaroverspeedhistoryBeanArr[mReqGetCarSpeedIndex].getCarId());
-            NetUtil.getNetUtil().addRequest("GetCarSpeed", values, CaroverspeedhistoryBean.class);
+            values.put("CarId", mCarOverSpeedHistoryBeanArr[mReqGetCarSpeedIndex].getCarId());
+            NetUtil.getNetUtil().addRequest("GetCarSpeed.do", values, CarOverSpeedHistoryBean.class);
         } else {
             Intent intent = new Intent();
-            intent.setAction(CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver.class.getName());
+            intent.setAction("CarSpeedListenerFragmentBroadcastReceiver");
             sendBroadcast(intent);
         }
     }
@@ -93,17 +93,8 @@ public class CarSpeedListenerService extends BaseService {
         public void run() {
             mReqGetCarSpeedIndex = 0;
             Map<String, Integer> values = new HashMap<>();
-            values.put("CarId", mCaroverspeedhistoryBeanArr[mReqGetCarSpeedIndex].getCarId());
-            NetUtil.getNetUtil().addRequest("GetCarSpeed", values, CaroverspeedhistoryBean.class);
+            values.put("CarId", mCarOverSpeedHistoryBeanArr[mReqGetCarSpeedIndex].getCarId());
+            NetUtil.getNetUtil().addRequest("GetCarSpeed.do", values, CarOverSpeedHistoryBean.class);
         }
     }
-
-    public class CarSpeedListenerServiceBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mCar_speed_yuzhi = SpUtils.getInstance(context).getInt("car_speed_yuzhi", 60);
-        }
-    }
-
 }

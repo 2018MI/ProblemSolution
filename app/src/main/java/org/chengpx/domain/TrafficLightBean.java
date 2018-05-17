@@ -1,25 +1,58 @@
 package org.chengpx.domain;
 
-/**
- * create at 2018/5/9 21:01 by chengpx
- */
 public class TrafficLightBean {
 
+    public TrafficLightBean(Integer trafficLightId) {
+        TrafficLightId = trafficLightId;
+    }
+
+    public TrafficLightBean() {
+    }
+
     /**
-     * RedTime : 25
+     * RedTime : 7
+     * YellowTime : 3
      * GreenTime : 55
-     * YellowTime : 5
      */
-    private String RedTime;
-    private String GreenTime;
-    private String YellowTime;
-    private Integer RoadId;
+
+    private int RedTime;
+    private int YellowTime;
+    private int GreenTime;
     /**
-     * Status : Red
-     * Time : 8
+     * Status : Green
+     * Time : 55
      */
+
     private String Status;
-    private int Time;
+    private String Time;
+    private Integer TrafficLightId;
+    private String StatusDesc;
+    private int StatusResId;
+    private Integer RoadId;
+
+    public int getRedTime() {
+        return RedTime;
+    }
+
+    public void setRedTime(int RedTime) {
+        this.RedTime = RedTime;
+    }
+
+    public int getYellowTime() {
+        return YellowTime;
+    }
+
+    public void setYellowTime(int YellowTime) {
+        this.YellowTime = YellowTime;
+    }
+
+    public int getGreenTime() {
+        return GreenTime;
+    }
+
+    public void setGreenTime(int GreenTime) {
+        this.GreenTime = GreenTime;
+    }
 
     public String getStatus() {
         return Status;
@@ -29,36 +62,36 @@ public class TrafficLightBean {
         this.Status = Status;
     }
 
-    public int getTime() {
+    public String getTime() {
         return Time;
     }
 
-    public void setTime(int Time) {
+    public void setTime(String Time) {
         this.Time = Time;
     }
 
-    public String getRedTime() {
-        return RedTime;
+    public Integer getTrafficLightId() {
+        return TrafficLightId;
     }
 
-    public void setRedTime(String RedTime) {
-        this.RedTime = RedTime;
+    public void setTrafficLightId(Integer trafficLightId) {
+        TrafficLightId = trafficLightId;
     }
 
-    public String getGreenTime() {
-        return GreenTime;
+    public String getStatusDesc() {
+        return StatusDesc;
     }
 
-    public void setGreenTime(String GreenTime) {
-        this.GreenTime = GreenTime;
+    public void setStatusDesc(String statusDesc) {
+        StatusDesc = statusDesc;
     }
 
-    public String getYellowTime() {
-        return YellowTime;
+    public int getStatusResId() {
+        return StatusResId;
     }
 
-    public void setYellowTime(String YellowTime) {
-        this.YellowTime = YellowTime;
+    public void setStatusResId(int statusResId) {
+        StatusResId = statusResId;
     }
 
     public Integer getRoadId() {
@@ -68,7 +101,4 @@ public class TrafficLightBean {
     public void setRoadId(Integer roadId) {
         RoadId = roadId;
     }
-
-
-
 }

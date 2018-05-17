@@ -1,4 +1,4 @@
-package org.chengpx;
+package org.chengpx.base;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -12,10 +12,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Toast;
 
+import org.chengpx.R;
+
 public abstract class BaseFragment extends Fragment implements Runnable {
 
     protected FragmentActivity mFragmentActivity;
     private AlertDialog mCurrentDialog;
+    private boolean mIsDestoryCallable;
+    private boolean mIsInitCallable = true;
 
     @Nullable
     @Override
@@ -41,8 +45,12 @@ public abstract class BaseFragment extends Fragment implements Runnable {
     @Override
     public final void onResume() {
         super.onResume();
-        initData();
-        main();
+        if (mIsInitCallable) {
+            initData();
+            main();
+            mIsInitCallable = false;
+            mIsDestoryCallable = true;
+        }
     }
 
     protected abstract void main();
@@ -52,7 +60,11 @@ public abstract class BaseFragment extends Fragment implements Runnable {
     @Override
     public final void onPause() {
         super.onPause();
-        onDims();
+        if (mIsDestoryCallable) {
+            onDims();
+            mIsDestoryCallable = false;
+            mIsInitCallable = true;
+        }
     }
 
     protected abstract void onDims();
@@ -85,6 +97,23 @@ public abstract class BaseFragment extends Fragment implements Runnable {
     public void run() {
         if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
             mCurrentDialog.dismiss();
+        }
+    }
+
+    public void destory() {
+        if (mIsDestoryCallable) {
+            onDims();
+            mIsDestoryCallable = false;
+            mIsInitCallable = true;
+        }
+    }
+
+    public void init() {
+        if (mIsInitCallable) {
+            initData();
+            main();
+            mIsInitCallable = false;
+            mIsDestoryCallable = true;
         }
     }
 

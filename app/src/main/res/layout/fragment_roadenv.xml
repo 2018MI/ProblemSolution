@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/roadenv_tv_pm25val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="PM2.5当前值: 500" />
+
+        <TextView
+            android:id="@+id/roadenv_tv_pm25tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="友情提示: 不适合出行" />
+
+        <SurfaceView
+            android:id="@+id/roadenv_surfaceview_pm25"
+            android:layout_width="480dp"
+            android:layout_height="270dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/roadenv_tv_lightIntensityval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="关照强度当前值: 1256" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="关照阈值上限值: 3190" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="光照阈值下限值: 1100" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="友情提示: 适合出行" />
+
+        <FrameLayout
+            android:layout_width="480dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp">
+
+            <ProgressBar
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="7000"
+                android:progress="7000"
+                android:progressDrawable="@drawable/progress_greenbg" />
+
+            <ProgressBar
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="7000"
+                android:progress="1100"
+                android:progressDrawable="@drawable/progress_lefredbg" />
+
+
+            <ProgressBar
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:max="7000"
+                android:progress="3810"
+                android:progressDrawable="@drawable/progress_rightredbg" />
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/roadenv_progressbar_lightintensity"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="480dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_horizontal"
+            android:max="7000"
+            android:progress="3000"
+            android:progressDrawable="@drawable/progress_bluebg" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

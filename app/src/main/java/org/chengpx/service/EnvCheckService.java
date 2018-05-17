@@ -3,13 +3,11 @@ package org.chengpx.service;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
+import org.chengpx.base.BaseService;
 import org.chengpx.R;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;
@@ -31,7 +29,7 @@ import java.util.TimerTask;
 /**
  * create at 2018/5/10 16:41 by chengpx
  */
-public class EnvCheckService extends Service {
+public class EnvCheckService extends BaseService {
 
     private Timer mTimer;
     private EnvBean[] mEnvBeanArr = {
@@ -40,25 +38,15 @@ public class EnvCheckService extends Service {
             new EnvBean("pm2.5", "pm2.5", new int[]{0, 300}), new EnvBean("RoadStatus", "道路状态", new int[]{1, 5})
     };
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    protected void init() {
         EventBus.getDefault().register(this);
         mTimer = new Timer();
         mTimer.schedule(new MyTimerTask(), 0, 1000 * 10);
-
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onDie() {
         mTimer.cancel();
         mTimer = null;
         EventBus.getDefault().unregister(this);

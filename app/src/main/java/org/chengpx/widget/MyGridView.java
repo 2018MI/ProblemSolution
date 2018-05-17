@@ -4,12 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.GridView;
 
-/**
- * create at 2018/5/12 8:14 by chengpx
- */
 public class MyGridView extends GridView {
-
-    private boolean mIsMeasure;
+    private boolean mIsisMeasure;
 
     public MyGridView(Context context) {
         super(context);
@@ -25,17 +21,18 @@ public class MyGridView extends GridView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        mIsMeasure = true;
+        mIsisMeasure = true;
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        mIsMeasure = false;
+        mIsisMeasure = false;
         super.onLayout(changed, l, t, r, b);
     }
 
-    public boolean isMeasure() {
-        return mIsMeasure;
+    public boolean isIsisMeasure() {
+        return mIsisMeasure;
     }
 }

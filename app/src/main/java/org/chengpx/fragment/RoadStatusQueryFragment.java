@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;

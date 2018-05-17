@@ -19,10 +19,11 @@ import org.chengpx.fragment.EnvFragment;
 import org.chengpx.fragment.MyEtcFragment;
 import org.chengpx.fragment.RoadStatusQueryFragment;
 import org.chengpx.fragment.SubwayFragment;
-import org.chengpx.fragment.Test36Fragment;
 import org.chengpx.fragment.ThresholdSettingFragment;
 import org.chengpx.fragment.TrafficLightManagerFragment;
 import org.chengpx.fragment.TravelManagementFragment;
+import org.chengpx.fragment.WeatherFragment;
+import org.chengpx.fragment.mytraffic.MyTrafficFragment;
 
 /**
  * create at 2018/5/9 14:45 by chengpx
@@ -33,12 +34,13 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private ListView mainmenuLvItems;
     private String[] mItemStrArr = {
             "道路环境", "etc账户充值", "红绿灯管理", "etc管理", "小车单双号管制", "阈值设置", "路况查询",
-            "天气信息", "地铁路线查看", "小车车速监控"
+            "天气信息", "地铁路线查看", "小车车速监控", "我的交通"
     };
     private Fragment[] mFragmentArr = {
             new EnvFragment(), new BalanceRechargeFragment(), new TrafficLightManagerFragment(),
             new MyEtcFragment(), new TravelManagementFragment(), new ThresholdSettingFragment(),
-            new RoadStatusQueryFragment(), new Test36Fragment(), new SubwayFragment(), new CarSpeedListenerFragment()
+            new RoadStatusQueryFragment(), new WeatherFragment(), new SubwayFragment(), new CarSpeedListenerFragment(),
+            new MyTrafficFragment()
     };
 
     @Override

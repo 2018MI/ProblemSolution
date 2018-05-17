@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.RuleBean;
 import org.chengpx.domain.TrafficLightBean;

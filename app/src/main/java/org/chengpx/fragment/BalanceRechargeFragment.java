@@ -16,7 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.CarBean;
 import org.chengpx.util.db.CarDao;

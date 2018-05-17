@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import org.chengpx.BaseFragment;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.service.EnvCheckService;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class ThresholdSettingFragment extends BaseFragment implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener {
 
-    private String mTag = "org.chengpx.fragment.ThresholdSettingFragment";
+    private String mTag = getClass().getName();
 
     private Switch thresholdsetting_switch_isautocallpolice;
     private EditText thresholdsetting_et_temperature;

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/myroadstatus_tv_roadiv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="路口-1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:text="配置信息" />
+
+            <TextView
+                android:id="@+id/myroadstatus_tv_greentime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:text="绿灯-1秒" />
+
+            <TextView
+                android:id="@+id/myroadstatus_tv_yellowtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:text="黄灯-1秒" />
+
+            <TextView
+                android:id="@+id/myroadstatus_tv_redtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:text="红灯-1秒" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/myroadstatus_tv_horstatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="横向状态: 绿灯-1秒" />
+
+                <ImageView
+                    android:background="@drawable/shape_oval_gray"
+                    android:id="@+id/myroadstatus_iv_horstatus"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/myroadstatus_tv_verstatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="纵向状态: 绿灯-1秒" />
+
+                <ImageView
+                    android:id="@+id/myroadstatus_iv_verstatus"
+                    android:background="@drawable/shape_oval_gray"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="人工控制" />
+
+        <Button
+            android:id="@+id/myroadstatus_btn_horcontrol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="横向" />
+
+        <Button
+            android:id="@+id/myroadstatus_btn_vercontrol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="纵向" />
+
+    </LinearLayout>
+
+</LinearLayout>
