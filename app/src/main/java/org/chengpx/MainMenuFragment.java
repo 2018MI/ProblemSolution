@@ -13,13 +13,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import org.chengpx.fragment.BalanceRechargeFragment;
+import org.chengpx.fragment.CarManagerFragment;
 import org.chengpx.fragment.CarSpeedListenerFragment;
 import org.chengpx.fragment.EnvFragment;
 import org.chengpx.fragment.MyEtcFragment;
 import org.chengpx.fragment.RoadStatusQueryFragment;
 import org.chengpx.fragment.SubwayFragment;
 import org.chengpx.fragment.ThresholdSettingFragment;
+import org.chengpx.fragment.TrafficLightFragment;
 import org.chengpx.fragment.TrafficLightManagerFragment;
 import org.chengpx.fragment.TravelManagementFragment;
 import org.chengpx.fragment.WeatherFragment;
@@ -33,14 +34,20 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private FragmentActivity mFragmentActivity;
     private ListView mainmenuLvItems;
     private String[] mItemStrArr = {
-            "道路环境", "etc账户充值", "红绿灯管理", "etc管理", "小车单双号管制", "阈值设置", "路况查询",
-            "天气信息", "地铁路线查看", "小车车速监控", "我的交通"
+            "道路环境", "我的交通",
+            "红绿灯管理", "红绿灯管理2",
+            "阈值设置", "路况查询",
+            "天气信息", "地铁路线查看",
+            "小车车速监控",
+            "小车账户充值", "etc管理", "小车单双号管制"
     };
     private Fragment[] mFragmentArr = {
-            new EnvFragment(), new BalanceRechargeFragment(), new TrafficLightManagerFragment(),
-            new MyEtcFragment(), new TravelManagementFragment(), new ThresholdSettingFragment(),
-            new RoadStatusQueryFragment(), new WeatherFragment(), new SubwayFragment(), new CarSpeedListenerFragment(),
-            new MyTrafficFragment()
+            new EnvFragment(), new MyTrafficFragment(),
+            new TrafficLightManagerFragment(), new TrafficLightFragment(),
+            new ThresholdSettingFragment(), new RoadStatusQueryFragment(),
+            new WeatherFragment(), new SubwayFragment(),
+            new CarSpeedListenerFragment(),
+            new CarManagerFragment(), new MyEtcFragment(), new TravelManagementFragment()
     };
 
     @Override

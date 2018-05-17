@@ -1,5 +1,6 @@
 package org.chengpx.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,16 +33,15 @@ import java.util.TimerTask;
 /**
  * create at 2018/5/9 20:43 by chengpx
  */
-public class TrafficLightManagerFragment extends BaseFragment implements AdapterView.OnItemSelectedListener, Comparator<Integer> {
+public class TrafficLightManagerFragment extends BaseFragment implements AdapterView.OnItemSelectedListener, Comparator<TrafficLightBean> {
 
-    private String mTag = "org.chengpx.fragment.TrafficLightManagerFragment";
+    private String mTag = getClass().getName();
 
     private ImageView trafficlightmanagerIvRedlight;
     private ImageView trafficlightmanagerIvYellowlight;
     private ImageView trafficlightmanagerIvGreenlight;
     private Spinner trafficlightmanagerSpinnerRules;
     private ListView trafficlightmanagerLvData;
-    private Integer[] mRoadIdArr = {1, 2, 3};
     private int mReqGetTrafficLightConfigActionIndex;
     private Map<Integer, TrafficLightBean> mTrafficLightBeanMap;
     private MyAdapter mMyAdapter;
@@ -59,7 +59,13 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
             new RuleBean("黄灯升序", "YellowTime", RuleBean.ASC),
             new RuleBean("黄灯降序", "YellowTime", RuleBean.DESC)
     };
+    private TrafficLightBean[] mTrafficLightBeanArr = {
+            new TrafficLightBean(1), new TrafficLightBean(2),
+            new TrafficLightBean(3)
+    };
     private Timer mTimer;
+    private ProgressDialog mTrafficLightConfigDialog;
+    private ProgressDialog mTraffilLightStatusDialog;
 
     protected void initListener() {
         trafficlightmanagerSpinnerRules.setOnItemSelectedListener(this);
@@ -96,22 +102,29 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
         EventBus.getDefault().register(this);
         mTrafficLightBeanMap = new HashMap<>();
         Map<String, Integer> values = new HashMap<>();
-        values.put("TrafficLightId", mRoadIdArr[mReqGetTrafficLightConfigActionIndex]);
+        values.put("TrafficLightId", mTrafficLightBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightId());
+        mTrafficLightConfigDialog = showLoadingDialog("红绿灯配置加载", "");
         NetUtil.getNetUtil().addRequest("GetTrafficLightConfigAction.do", values, TrafficLightBean.class);
         mTimer = new Timer();
+        mTraffilLightStatusDialog = showLoadingDialog("红绿灯状态查询", "");
         mTimer.schedule(new MyTimerTask(), 0, 3000);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getTrafficLightConfigAction(TrafficLightBean trafficLightBean) {
-        mTrafficLightBeanMap.put(mRoadIdArr[mReqGetTrafficLightConfigActionIndex], trafficLightBean);
-        trafficLightBean.setRoadId(mRoadIdArr[mReqGetTrafficLightConfigActionIndex]);
+        TrafficLightBean localTrafficLightBean = mTrafficLightBeanArr[mReqGetTrafficLightConfigActionIndex];
+        localTrafficLightBean.setRedTime(trafficLightBean.getRedTime());
+        localTrafficLightBean.setYellowTime(trafficLightBean.getYellowTime());
+        localTrafficLightBean.setGreenTime(trafficLightBean.getGreenTime());
+        mTrafficLightBeanMap.put(localTrafficLightBean.getTrafficLightId(), localTrafficLightBean);
         mReqGetTrafficLightConfigActionIndex++;
-        if (mReqGetTrafficLightConfigActionIndex < mRoadIdArr.length) {
+        if (mReqGetTrafficLightConfigActionIndex < mTrafficLightBeanArr.length) {
             Map<String, Integer> values = new HashMap<>();
-            values.put("TrafficLightId", mRoadIdArr[mReqGetTrafficLightConfigActionIndex]);
+            values.put("TrafficLightId", mTrafficLightBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightId());
             NetUtil.getNetUtil().addRequest("GetTrafficLightConfigAction.do", values, TrafficLightBean.class);
         } else {
+            mTrafficLightConfigDialog.dismiss();
+            mTrafficLightConfigDialog = null;
             if (mMyAdapter != null) {
                 mMyAdapter.notifyDataSetChanged();
             }
@@ -120,6 +133,10 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getTrafficLightNowStatus(Map<String, Object> map) {
+        if (mTraffilLightStatusDialog != null) {
+            mTraffilLightStatusDialog.dismiss();
+            mTraffilLightStatusDialog = null;
+        }
         switch ((String) map.get("Status")) {
             case "Red":
                 trafficlightmanagerIvRedlight.setImageResource(R.drawable.shape_oval_red);
@@ -141,7 +158,7 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Arrays.sort(mRoadIdArr, this);
+        Arrays.sort(mTrafficLightBeanArr, this);
         mMyAdapter.notifyDataSetChanged();
     }
 
@@ -151,18 +168,13 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
     }
 
     @Override
-    public int compare(Integer o1, Integer o2) {
+    public int compare(TrafficLightBean o1, TrafficLightBean o2) {
         RuleBean ruleBean = mRuleBeanArr[trafficlightmanagerSpinnerRules.getSelectedItemPosition()];
         try {
             Field declaredField = TrafficLightBean.class.getDeclaredField(ruleBean.getColumnField());
             declaredField.setAccessible(true);
-            TrafficLightBean trafficLightBean1 = mTrafficLightBeanMap.get(o1);
-            TrafficLightBean trafficLightBean2 = mTrafficLightBeanMap.get(o2);
-            if (trafficLightBean1 == null || trafficLightBean2 == null) {
-                return 0;
-            }
-            Comparable val1 = (Comparable) declaredField.get(trafficLightBean1);
-            Comparable val12 = (Comparable) declaredField.get(trafficLightBean2);
+            Comparable val1 = (Comparable) declaredField.get(o1);
+            Comparable val12 = (Comparable) declaredField.get(o2);
             if (RuleBean.ASC.equals(ruleBean.getPriority())) {
                 return val1.compareTo(val12);
             } else if (RuleBean.DESC.equals(ruleBean.getPriority())) {
@@ -185,7 +197,7 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
 
         @Override
         public TrafficLightBean getItem(int position) {
-            return mTrafficLightBeanMap.get(mRoadIdArr[position]);
+            return mTrafficLightBeanMap.get(mTrafficLightBeanArr[position].getTrafficLightId());
         }
 
         @Override
@@ -205,7 +217,7 @@ public class TrafficLightManagerFragment extends BaseFragment implements Adapter
                 viewHolder = (ViewHolder) convertView.getTag();
             }
             TrafficLightBean trafficLightBean = getItem(position);
-            viewHolder.trafficlightmanager_tv_lvRoadId.setText(trafficLightBean.getRoadId() + "");
+            viewHolder.trafficlightmanager_tv_lvRoadId.setText(trafficLightBean.getTrafficLightId() + "");
             viewHolder.trafficlightmanager_tv_lvredtime.setText(trafficLightBean.getRedTime() + "");
             viewHolder.trafficlightmanager_tv_lvyellowtime.setText(trafficLightBean.getYellowTime() + "");
             viewHolder.trafficlightmanager_tv_lvgreentime.setText(trafficLightBean.getGreenTime() + "");

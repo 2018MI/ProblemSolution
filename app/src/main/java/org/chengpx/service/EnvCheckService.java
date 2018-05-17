@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
-import org.chengpx.base.BaseService;
 import org.chengpx.R;
+import org.chengpx.base.BaseService;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;
 import org.chengpx.util.SpUtils;

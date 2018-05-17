@@ -1,6 +1,6 @@
 package org.chengpx.base;
 
-import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,12 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Toast;
 
-import org.chengpx.R;
-
-public abstract class BaseFragment extends Fragment implements Runnable {
+public abstract class BaseFragment extends Fragment {
 
     protected FragmentActivity mFragmentActivity;
-    private AlertDialog mCurrentDialog;
     private boolean mIsDestoryCallable;
     private boolean mIsInitCallable = true;
 
@@ -73,33 +70,6 @@ public abstract class BaseFragment extends Fragment implements Runnable {
         Toast.makeText(mFragmentActivity, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public AlertDialog showDialog(View view) {
-        if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
-            mCurrentDialog.dismiss();
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(mFragmentActivity);
-        AlertDialog alertDialog = builder.create();
-        Window window = alertDialog.getWindow();
-        assert window != null;
-        //window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
-        if (view == null) {
-            view = View.inflate(mFragmentActivity, R.layout.dialog_loading, null);
-        }
-        window.setContentView(view);
-        window.setGravity(Gravity.CENTER);
-        mCurrentDialog = alertDialog;
-        view.postDelayed(this, 2000);
-        return alertDialog;
-    }
-
-    @Override
-    public void run() {
-        if (mCurrentDialog != null && mCurrentDialog.isShowing()) {
-            mCurrentDialog.dismiss();
-        }
-    }
-
     public void destory() {
         if (mIsDestoryCallable) {
             onDims();
@@ -115,6 +85,14 @@ public abstract class BaseFragment extends Fragment implements Runnable {
             mIsInitCallable = false;
             mIsDestoryCallable = true;
         }
+    }
+
+    protected ProgressDialog showLoadingDialog(String title, String msg) {
+        ProgressDialog progressDialog = ProgressDialog.show(mFragmentActivity, title, msg);
+        Window window = progressDialog.getWindow();
+        assert window != null;
+        window.setGravity(Gravity.CENTER);
+        return progressDialog;
     }
 
 }

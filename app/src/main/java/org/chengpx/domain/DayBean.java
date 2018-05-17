@@ -3,26 +3,17 @@ package org.chengpx.domain;
 /**
  * create at 2018/5/14 16:10 by chengpx
  */
-public class MyDayBean {
+public class DayBean {
 
-    //private String temperatureRange;
     private WeatherBean weatherBean;
     private String desc;
 
-    public MyDayBean(String desc) {
+    public DayBean(String desc) {
         this.desc = desc;
     }
 
-    public MyDayBean() {
+    public DayBean() {
     }
-
-//    public String getTemperatureRange() {
-//        return temperatureRange;
-//    }
-//
-//    public void setTemperatureRange(String temperatureRange) {
-//        this.temperatureRange = temperatureRange;
-//    }
 
     public WeatherBean getWeatherBean() {
         return weatherBean;
@@ -39,7 +30,5 @@ public class MyDayBean {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-
-
 
 }

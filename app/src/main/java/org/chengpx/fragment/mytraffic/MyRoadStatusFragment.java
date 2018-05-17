@@ -3,6 +3,7 @@ package org.chengpx.fragment.mytraffic;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 
 import org.chengpx.R;
 import org.chengpx.base.BaseFragment;
-import org.chengpx.domain.MyRoadStatusBean;
+import org.chengpx.domain.RoadBean;
 import org.chengpx.domain.SetTrafficLightConfigBean;
 import org.chengpx.domain.TrafficLightBean;
 import org.chengpx.util.net.NetUtil;
@@ -44,14 +45,14 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
 
     private ListView mMyroadstatusLvContent;
     private MyAdapter mAdapter;
-    private MyRoadStatusBean[] mMyRoadStatusBeanArr = {
-            new MyRoadStatusBean(1, new TrafficLightBean(1)),
-            new MyRoadStatusBean(2, new TrafficLightBean(2)),
-            new MyRoadStatusBean(3, new TrafficLightBean(3)),
-            new MyRoadStatusBean(4, new TrafficLightBean(4)),
-            new MyRoadStatusBean(5, new TrafficLightBean(5))
+    private RoadBean[] mRoadBeanArr = {
+            new RoadBean(1, new TrafficLightBean(1)),
+            new RoadBean(2, new TrafficLightBean(2)),
+            new RoadBean(3, new TrafficLightBean(3)),
+            new RoadBean(4, new TrafficLightBean(4)),
+            new RoadBean(5, new TrafficLightBean(5))
     };
-    private Map<Integer, MyRoadStatusBean> mMyRoadStatusBeanMap;
+    private Map<Integer, RoadBean> mMyRoadStatusBeanMap;
     private int mReqGetTrafficLightConfigActionIndex;
     private Timer mTimer;
     private int mReqGetTrafficLightNowStatusIndex;
@@ -66,6 +67,8 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
     private List<Integer> mConfigTrafficLightIdList;
     private int mReqSetTrafficLightConfigIndex;
     private Map<String, Integer> mConfigTrafficLightValues;
+    private ProgressDialog mTrafficLightActionDialog;
+    private ProgressDialog mTrafficLightStatusDialog;
 
     @Override
     protected void initListener() {
@@ -88,8 +91,6 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
     protected void main() {
         mAdapter = new MyAdapter();
         mMyroadstatusLvContent.setAdapter(mAdapter);
-        mTimer = new Timer();
-        mTimer.schedule(new MyTimerTask(), 0, 1000 * 3);
     }
 
     @Override
@@ -97,24 +98,30 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
         EventBus.getDefault().register(this);
         mMyRoadStatusBeanMap = new HashMap<>();
         Map<String, Integer> values = new HashMap<>();
-        values.put("TrafficLightId", mMyRoadStatusBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
+        values.put("TrafficLightId", mRoadBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
+        mTrafficLightActionDialog = showLoadingDialog("红绿灯配置加载", "");
         NetUtil.getNetUtil().addRequest("GetTrafficLightConfigAction.do", values, TrafficLightBean.class);
+        mTrafficLightStatusDialog = showLoadingDialog("红绿灯状态加载", "");
+        mTimer = new Timer();
+        mTimer.schedule(new MyTimerTask(), 0, 1000 * 3);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetTrafficLightConfigAction(TrafficLightBean trafficLightBean) {
-        MyRoadStatusBean localMyRoadStatusBean = mMyRoadStatusBeanArr[mReqGetTrafficLightConfigActionIndex];
-        TrafficLightBean localTrafficLightBean = localMyRoadStatusBean.getTrafficLightBean();
+        RoadBean localRoadBean = mRoadBeanArr[mReqGetTrafficLightConfigActionIndex];
+        TrafficLightBean localTrafficLightBean = localRoadBean.getTrafficLightBean();
         localTrafficLightBean.setGreenTime(trafficLightBean.getGreenTime());
         localTrafficLightBean.setYellowTime(trafficLightBean.getYellowTime());
         localTrafficLightBean.setRedTime(trafficLightBean.getRedTime());
-        mMyRoadStatusBeanMap.put(localMyRoadStatusBean.getRoadId(), localMyRoadStatusBean);
+        mMyRoadStatusBeanMap.put(localRoadBean.getRoadId(), localRoadBean);
         mReqGetTrafficLightConfigActionIndex++;
-        if (mReqGetTrafficLightConfigActionIndex < mMyRoadStatusBeanArr.length) {
+        if (mReqGetTrafficLightConfigActionIndex < mRoadBeanArr.length) {
             Map<String, Integer> values = new HashMap<>();
-            values.put("TrafficLightId", mMyRoadStatusBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
+            values.put("TrafficLightId", mRoadBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
             NetUtil.getNetUtil().addRequest("GetTrafficLightConfigAction.do", values, TrafficLightBean.class);
         } else {
+            mTrafficLightActionDialog.dismiss();
+            mTrafficLightActionDialog = null;
             mReqGetTrafficLightConfigActionIndex = 0;
             if (mAdapter != null) {
                 mAdapter.notifyDataSetChanged();
@@ -124,17 +131,21 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetTrafficLightNowStatus(Map<String, Object> map) {
-        MyRoadStatusBean localMyRoadStatusBean = mMyRoadStatusBeanArr[mReqGetTrafficLightNowStatusIndex];
-        TrafficLightBean localTrafficLightBean = localMyRoadStatusBean.getTrafficLightBean();
+        RoadBean localRoadBean = mRoadBeanArr[mReqGetTrafficLightNowStatusIndex];
+        TrafficLightBean localTrafficLightBean = localRoadBean.getTrafficLightBean();
         String status = (String) map.get("Status");
         localTrafficLightBean.setTime(map.get("Time") + "");
         localTrafficLightBean.setStatus(status);
         mReqGetTrafficLightNowStatusIndex++;
-        if (mReqGetTrafficLightNowStatusIndex < mMyRoadStatusBeanArr.length) {
+        if (mReqGetTrafficLightNowStatusIndex < mRoadBeanArr.length) {
             Map<String, Integer> values = new HashMap<>();
-            values.put("TrafficLightId", mMyRoadStatusBeanArr[mReqGetTrafficLightNowStatusIndex].getTrafficLightBean().getTrafficLightId());
+            values.put("TrafficLightId", mRoadBeanArr[mReqGetTrafficLightNowStatusIndex].getTrafficLightBean().getTrafficLightId());
             NetUtil.getNetUtil().addRequest("GetTrafficLightNowStatus.do", values, Map.class);
         } else {
+            if (mTrafficLightStatusDialog != null) {
+                mTrafficLightStatusDialog.dismiss();
+                mTrafficLightStatusDialog = null;
+            }
             mReqGetTrafficLightNowStatusIndex = 0;
             if (mAdapter != null) {
                 mAdapter.notifyDataSetChanged();
@@ -154,18 +165,18 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void GetRoadStatus(MyRoadStatusBean myRoadStatusBean) {
-        MyRoadStatusBean localMyRoadStatusBean = mMyRoadStatusBeanArr[mReqGetRoadStatusIndex];
-        if (myRoadStatusBean.getStatus() > 3) {
-            notifyMsg(localMyRoadStatusBean.getRoadId(), myRoadStatusBean.getStatus());
+    public void GetRoadStatus(RoadBean roadBean) {
+        RoadBean localRoadBean = mRoadBeanArr[mReqGetRoadStatusIndex];
+        if (roadBean.getStatus() > 3) {
+            notifyMsg(localRoadBean.getRoadId(), roadBean.getStatus());
         } else {
-            clearMsg(localMyRoadStatusBean.getRoadId());
+            clearMsg(localRoadBean.getRoadId());
         }
         mReqGetRoadStatusIndex++;
-        if (mReqGetRoadStatusIndex < mMyRoadStatusBeanArr.length) {
+        if (mReqGetRoadStatusIndex < mRoadBeanArr.length) {
             Map<String, Integer> values = new HashMap<>();
-            values.put("RoadId", mMyRoadStatusBeanArr[mReqGetRoadStatusIndex].getRoadId());
-            NetUtil.getNetUtil().addRequest("GetRoadStatus.do", values, MyRoadStatusBean.class);
+            values.put("RoadId", mRoadBeanArr[mReqGetRoadStatusIndex].getRoadId());
+            NetUtil.getNetUtil().addRequest("GetRoadStatus.do", values, RoadBean.class);
         }
     }
 
@@ -245,7 +256,7 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
             mConfigTrafficLightValues = null;
             mReqGetTrafficLightConfigActionIndex = 0;
             Map<String, Integer> values = new HashMap<>();
-            values.put("TrafficLightId", mMyRoadStatusBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
+            values.put("TrafficLightId", mRoadBeanArr[mReqGetTrafficLightConfigActionIndex].getTrafficLightBean().getTrafficLightId());
             NetUtil.getNetUtil().addRequest("GetTrafficLightConfigAction.do", values, TrafficLightBean.class);
         }
     }
@@ -275,9 +286,9 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
         }
 
         @Override
-        public MyRoadStatusBean getItem(int i) {
-            MyRoadStatusBean myRoadStatusBean = mMyRoadStatusBeanMap.get(mMyRoadStatusBeanArr[i].getRoadId());
-            TrafficLightBean trafficLightBean = myRoadStatusBean.getTrafficLightBean();
+        public RoadBean getItem(int i) {
+            RoadBean roadBean = mMyRoadStatusBeanMap.get(mRoadBeanArr[i].getRoadId());
+            TrafficLightBean trafficLightBean = roadBean.getTrafficLightBean();
             String status = trafficLightBean.getStatus();
             if (status != null) {
                 switch (status) {
@@ -295,7 +306,7 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
                         break;
                 }
             }
-            return myRoadStatusBean;
+            return roadBean;
         }
 
         @Override
@@ -314,9 +325,9 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
             } else {
                 viewHolder = (ViewHolder) view.getTag();
             }
-            MyRoadStatusBean myRoadStatusBean = getItem(i);
-            TrafficLightBean trafficLightBean = myRoadStatusBean.getTrafficLightBean();
-            viewHolder.myroadstatus_tv_roadiv.setText(myRoadStatusBean.getRoadId() + "");
+            RoadBean roadBean = getItem(i);
+            TrafficLightBean trafficLightBean = roadBean.getTrafficLightBean();
+            viewHolder.myroadstatus_tv_roadiv.setText(roadBean.getRoadId() + "");
             viewHolder.myroadstatus_tv_redtime.setText("红灯" + trafficLightBean.getRedTime() + "秒");
             viewHolder.myroadstatus_tv_yellowtime.setText("黄灯" + trafficLightBean.getYellowTime() + "秒");
             viewHolder.myroadstatus_tv_greentime.setText("绿灯" + trafficLightBean.getGreenTime() + "秒");
@@ -377,10 +388,10 @@ public class MyRoadStatusFragment extends BaseFragment implements View.OnClickLi
             mReqGetTrafficLightNowStatusIndex = 0;
             mReqGetRoadStatusIndex = 0;
             Map<String, Integer> values = new HashMap<>();
-            values.put("TrafficLightId", mMyRoadStatusBeanArr[mReqGetTrafficLightNowStatusIndex].getTrafficLightBean().getTrafficLightId());
+            values.put("TrafficLightId", mRoadBeanArr[mReqGetTrafficLightNowStatusIndex].getTrafficLightBean().getTrafficLightId());
             NetUtil.getNetUtil().addRequest("GetTrafficLightNowStatus.do", values, Map.class);
-            values.put("RoadId", mMyRoadStatusBeanArr[mReqGetRoadStatusIndex].getRoadId());
-            NetUtil.getNetUtil().addRequest("GetRoadStatus.do", values, MyRoadStatusBean.class);
+            values.put("RoadId", mRoadBeanArr[mReqGetRoadStatusIndex].getRoadId());
+            NetUtil.getNetUtil().addRequest("GetRoadStatus.do", values, RoadBean.class);
         }
     }
 

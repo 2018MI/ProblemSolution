@@ -8,6 +8,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import org.chengpx.domain.CarBalanceRechargeHistoryBean;
 import org.chengpx.domain.CarBean;
 import org.chengpx.domain.CarOverSpeedHistoryBean;
 import org.chengpx.domain.EnvBean;
@@ -39,6 +40,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, EnvBean.class);
             TableUtils.createTable(connectionSource, CarBean.class);
             TableUtils.createTable(connectionSource, CarOverSpeedHistoryBean.class);
+            TableUtils.createTable(connectionSource, CarBalanceRechargeHistoryBean.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package org.chengpx.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,8 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;
 import org.chengpx.util.db.EnvDao;
@@ -30,7 +31,7 @@ import java.util.TimerTask;
 
 public class EnvFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
-    private String mTag = "org.chengpx.fragment.EnvFragment";
+    private String mTag = getClass().getName();
 
     private GridView env_gridview_content;
     private Timer timer;
@@ -46,6 +47,8 @@ public class EnvFragment extends BaseFragment implements AdapterView.OnItemClick
             new EnvBean("pm2.5", "PM2.5", new int[]{0, 300}),
             new EnvBean("RoadStatus", "道路状态", new int[]{1, 5})
     };
+    private ProgressDialog mEnvLoadDialog;
+    private ProgressDialog mRoadStatusLoadDialog;
 
     protected void initListener() {
         env_gridview_content.setOnItemClickListener(this);
@@ -69,6 +72,8 @@ public class EnvFragment extends BaseFragment implements AdapterView.OnItemClick
         EventBus.getDefault().register(this);
         mDataMap = new HashMap<>();
         envDao = EnvDao.getInstance(mFragmentActivity);
+        mEnvLoadDialog = showLoadingDialog("环境数据加载", "");
+        mRoadStatusLoadDialog = showLoadingDialog("道路状态数据加载", "");
         timer = new Timer();
         timer.schedule(new MyTimerTask(), 0, 3000);
     }
@@ -85,6 +90,10 @@ public class EnvFragment extends BaseFragment implements AdapterView.OnItemClick
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getAllSense(Map<String, Double> map) {
+        if (mEnvLoadDialog != null) {
+            mEnvLoadDialog.dismiss();
+            mEnvLoadDialog = null;
+        }
         List<EnvBean> envBeanList = new ArrayList<>();
         for (int index = 0; index < mEnvBeanArr.length - 1; index++) {
             EnvBean envBean = mEnvBeanArr[index];
@@ -105,6 +114,10 @@ public class EnvFragment extends BaseFragment implements AdapterView.OnItemClick
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getRoadStatus(RoadBean roadBean) {
+        if (mRoadStatusLoadDialog != null) {
+            mRoadStatusLoadDialog.dismiss();
+            mRoadStatusLoadDialog = null;
+        }
         EnvBean envBean = mEnvBeanArr[mEnvBeanArr.length - 1];
         envBean.setDateTime(new Date());
         envBean.setVal(roadBean.getStatus());

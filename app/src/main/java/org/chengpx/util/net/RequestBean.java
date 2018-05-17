@@ -3,37 +3,25 @@ package org.chengpx.util.net;
 import okhttp3.Request;
 
 public class RequestBean {
-    private Request request;
-    private String actionName;
-    private Class resultClass;
+    private Request mRequest;
+    private Class mResultClass;
+    private String mActionName;
 
-    public RequestBean(Request request, String actionName, Class resultClass) {
-        this.request = request;
-        this.actionName = actionName;
-        this.resultClass = resultClass;
+    RequestBean(Request request, Class aClass, String actionName) {
+        mRequest = request;
+        mResultClass = aClass;
+        mActionName = actionName;
     }
 
     public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
-    }
-
-    public String getActionName() {
-        return actionName;
-    }
-
-    public void setActionName(String actionName) {
-        this.actionName = actionName;
+        return mRequest;
     }
 
     public Class getResultClass() {
-        return resultClass;
+        return mResultClass;
     }
 
-    public void setResultClass(Class resultClass) {
-        this.resultClass = resultClass;
+    public String getActionName() {
+        return mActionName;
     }
 }

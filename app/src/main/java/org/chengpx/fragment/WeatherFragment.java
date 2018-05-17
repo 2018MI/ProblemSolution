@@ -1,5 +1,6 @@
 package org.chengpx.fragment;
 
+import android.app.ProgressDialog;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +15,7 @@ import android.widget.TextView;
 
 import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
-import org.chengpx.domain.MyDayBean;
+import org.chengpx.domain.DayBean;
 import org.chengpx.domain.WeatherBean;
 import org.chengpx.util.net.NetUtil;
 import org.chengpx.widget.MyGridView;
@@ -50,14 +51,15 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
             new int[]{0XFF1181E0, 0XFF3698E7, 0XFF65B6EF}, new int[]{0XFF5AB6FA, 0XFF76C1F9, 0XFFA2D2F6},//分别为开始颜色，中间夜色，结束颜色
             new int[]{0XFF8AABCB, 0XFF9FBBD5, 0XFFBBD2E2}
     };
-    private MyDayBean[] mMyDayBeanArr = {
-            new MyDayBean("今天"), new MyDayBean("明天"), new MyDayBean("后天"),
-            new MyDayBean(), new MyDayBean()
+    private DayBean[] mDayBeanArr = {
+            new DayBean("今天"), new DayBean("明天"), new DayBean("后天"),
+            new DayBean(), new DayBean()
     };
     private int mTemperature;
     private Random mRandom;
     private String mTag = getClass().getName();
     private BaseAdapter mAdapter;
+    private ProgressDialog mTemperatureLoadDialog;
 
     @Override
     protected void initListener() {
@@ -95,10 +97,15 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
         Map<String, String> values = new HashMap<>();
         values.put("SenseName", "temperature");
         NetUtil.getNetUtil().addRequest("GetSenseByName.do", values, WeatherBean.class);
+        mTemperatureLoadDialog = showLoadingDialog("温度数据加载", "");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetSenseByName(WeatherBean weatherBean) {
+        if (mTemperatureLoadDialog != null) {
+            mTemperatureLoadDialog.dismiss();
+            mTemperatureLoadDialog = null;
+        }
         mTemperature = weatherBean.getTemperature();
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
@@ -117,6 +124,7 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
                 Map<String, String> values = new HashMap<>();
                 values.put("SenseName", "temperature");
                 NetUtil.getNetUtil().addRequest("GetSenseByName.do", values, WeatherBean.class);
+                mTemperatureLoadDialog = showLoadingDialog("温度数据加载", "");
                 break;
         }
     }
@@ -124,11 +132,11 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
     private class MyAdapter extends BaseAdapter {
         @Override
         public int getCount() {
-            return mMyDayBeanArr.length;
+            return mDayBeanArr.length;
         }
 
         @Override
-        public MyDayBean getItem(int i) {
+        public DayBean getItem(int i) {
             int temperature = mTemperature;
             if (i != 0) {
                 if (mRandom.nextBoolean()) {
@@ -143,7 +151,7 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
                     }
                 }
             }
-            MyDayBean myDayBean = mMyDayBeanArr[i];
+            DayBean dayBean = mDayBeanArr[i];
             WeatherBean weatherBean;
             if (temperature < 10) {
                 if (mRandom.nextBoolean()) {
@@ -156,14 +164,14 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
             }
             weatherBean.setRange(new Integer[]{Math.max(0, temperature - 5), Math.min(37, temperature + 5)});
             weatherBean.setTemperature(temperature);
-            myDayBean.setWeatherBean(weatherBean);
-            String desc = myDayBean.getDesc();
+            dayBean.setWeatherBean(weatherBean);
+            String desc = dayBean.getDesc();
             if (desc == null) {
                 Calendar calendar = Calendar.getInstance(Locale.CHINA);
                 calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH) + i);
-                myDayBean.setDesc(calendar.get(Calendar.DAY_OF_MONTH) + "日" + "(" + String.format("%tA", calendar.getTime()) + ")");
+                dayBean.setDesc(calendar.get(Calendar.DAY_OF_MONTH) + "日" + "(" + String.format("%tA", calendar.getTime()) + ")");
             }
-            return myDayBean;
+            return dayBean;
         }
 
         @Override
@@ -187,9 +195,9 @@ public class WeatherFragment extends BaseFragment implements View.OnClickListene
                 return view;
             }
             Log.d(mTag, "i = " + i);
-            MyDayBean myDayBean = getItem(i);
-            viewHolder.weather_tv_lvdayinfo.setText(myDayBean.getDesc());
-            WeatherBean weatherBean = myDayBean.getWeatherBean();
+            DayBean dayBean = getItem(i);
+            viewHolder.weather_tv_lvdayinfo.setText(dayBean.getDesc());
+            WeatherBean weatherBean = dayBean.getWeatherBean();
             viewHolder.weather_iv_lvicon.setImageResource(weatherBean.getResId());
             viewHolder.weather_tv_lv_desc.setText(weatherBean.getDesc());
             viewHolder.weather_tv_lvtemperature.setText(weatherBean.getRange()[0] + "/" + weatherBean.getRange()[1] + "℃");

@@ -1,5 +1,6 @@
 package org.chengpx.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chengpx.base.BaseFragment;
 import org.chengpx.R;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.domain.EnvBean;
 import org.chengpx.domain.RoadBean;
 import org.chengpx.domain.RoadStatusBean;
@@ -35,19 +36,15 @@ import java.util.TimerTask;
  */
 public class RoadStatusQueryFragment extends BaseFragment implements View.OnClickListener {
 
-    private TextView test13_tv_hcksltop;
-    private TextView test13_tv_hckslleft;
-    private TextView test13_tv_hckslbottom;
-    private TextView test13_tv_hcgsright;
-    private TextView test13_tv_xuexiaoroad;
-    private TextView test13_tv_xinfuroad;
-    private TextView test13_tv_lenovoroad;
-    private TextView test13_tv_hospitalroad;
-    private TextView test13_tv_parking;
     private TextView test13_tv_date;
     private Button test13_btn_flush;
     private ListView test13_lv_senselist;
     private ListView test13_lv_roadstatusexmaple;
+    private RoadBean[] mRoadBeanArr = {
+            new RoadBean(1), new RoadBean(2), new RoadBean(3),
+            new RoadBean(4), new RoadBean(5), new RoadBean(6),
+            new RoadBean(7)
+    };
     private RoadStatusBean[] mRoadStatusBeanArr = {
             new RoadStatusBean(1, R.drawable.shape_rectangle_status1, "畅通"),
             new RoadStatusBean(2, R.drawable.shape_rectangle_status2, "缓行"),
@@ -60,17 +57,14 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
             new EnvBean("humidity", "相对湿度", "%"),
             new EnvBean("pm2.5", "PM2.5", "ug/m3")
     };
-    private RoadBean[] mRoadBeanArr = {
-            new RoadBean(1), new RoadBean(2), new RoadBean(3),
-            new RoadBean(4), new RoadBean(5), new RoadBean(6),
-            new RoadBean(7)
-    };
     private View[][] mRoadUiViewArr;
     private Map<String, EnvBean> mSenseDataMap;
     private SenseAdapter mSenseAdapter;
     private Timer mTimer;
     private int mRoadIdReqIndex;
     private Map<Integer, RoadStatusBean> mRoadStatusBeanMap;
+    private ProgressDialog mSenseLoadDialog;
+    private ProgressDialog mRoadStatusDialog;
 
     @Override
     protected void initListener() {
@@ -80,15 +74,15 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
     @Override
     protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_roadstatusquery, container, false);
-        test13_tv_hcksltop = (TextView) view.findViewById(R.id.test13_tv_hcksltop);
-        test13_tv_hckslleft = (TextView) view.findViewById(R.id.test13_tv_hckslleft);
-        test13_tv_hckslbottom = (TextView) view.findViewById(R.id.test13_tv_hckslbottom);
-        test13_tv_hcgsright = (TextView) view.findViewById(R.id.test13_tv_hcgsright);
-        test13_tv_xuexiaoroad = (TextView) view.findViewById(R.id.test13_tv_xuexiaoroad);
-        test13_tv_xinfuroad = (TextView) view.findViewById(R.id.test13_tv_xinfuroad);
-        test13_tv_lenovoroad = (TextView) view.findViewById(R.id.test13_tv_lenovoroad);
-        test13_tv_hospitalroad = (TextView) view.findViewById(R.id.test13_tv_hospitalroad);
-        test13_tv_parking = (TextView) view.findViewById(R.id.test13_tv_parking);
+        TextView test13_tv_hcksltop = (TextView) view.findViewById(R.id.test13_tv_hcksltop);
+        TextView test13_tv_hckslleft = (TextView) view.findViewById(R.id.test13_tv_hckslleft);
+        TextView test13_tv_hckslbottom = (TextView) view.findViewById(R.id.test13_tv_hckslbottom);
+        TextView test13_tv_hcgsright = (TextView) view.findViewById(R.id.test13_tv_hcgsright);
+        TextView test13_tv_xuexiaoroad = (TextView) view.findViewById(R.id.test13_tv_xuexiaoroad);
+        TextView test13_tv_xinfuroad = (TextView) view.findViewById(R.id.test13_tv_xinfuroad);
+        TextView test13_tv_lenovoroad = (TextView) view.findViewById(R.id.test13_tv_lenovoroad);
+        TextView test13_tv_hospitalroad = (TextView) view.findViewById(R.id.test13_tv_hospitalroad);
+        TextView test13_tv_parking = (TextView) view.findViewById(R.id.test13_tv_parking);
         test13_tv_date = (TextView) view.findViewById(R.id.test13_tv_date);
         test13_btn_flush = (Button) view.findViewById(R.id.test13_btn_flush);
         test13_lv_senselist = (ListView) view.findViewById(R.id.test13_lv_senselist);
@@ -123,12 +117,18 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
         test13_tv_date.setText(String.format(Locale.CHINA, "%tY-%tm-%td\n%tA", date, date, date, date));
         mSenseDataMap = new HashMap<>();
         NetUtil.getNetUtil().addRequest("GetAllSense.do", null, Map.class);
+        mSenseLoadDialog = showLoadingDialog("传感器数据加载", "");
         mTimer = new Timer();
         mTimer.schedule(new GetRoadStatusTimerTask(), 0, 3000);
+        mRoadStatusDialog = showLoadingDialog("道路状态加载", "");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getAllSense(Map<String, Double> map) {
+        if (mSenseLoadDialog != null) {
+            mSenseLoadDialog.dismiss();
+            mSenseLoadDialog = null;
+        }
         for (EnvBean envBean : mEnvBeanArr) {
             envBean.setVal(map.get(envBean.getSenseName()).intValue());
             mSenseDataMap.put(envBean.getSenseName(), envBean);
@@ -154,6 +154,7 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
         switch (v.getId()) {
             case R.id.test13_btn_flush:
                 NetUtil.getNetUtil().addRequest("GetAllSense.do", null, Map.class);
+                mSenseLoadDialog = showLoadingDialog("传感器数据加载", "");
                 break;
         }
     }
@@ -169,6 +170,11 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
             Map<String, Integer> reqValues = new HashMap<>();
             reqValues.put("RoadId", mRoadBeanArr[mRoadIdReqIndex].getRoadId());
             NetUtil.getNetUtil().addRequest("GetRoadStatus.do", reqValues, RoadBean.class);
+        } else {
+            if (mRoadStatusDialog != null) {
+                mRoadStatusDialog.dismiss();
+                mRoadStatusDialog = null;
+            }
         }
     }
 

@@ -9,26 +9,14 @@ public class TrafficLightBean {
     public TrafficLightBean() {
     }
 
-    /**
-     * RedTime : 7
-     * YellowTime : 3
-     * GreenTime : 55
-     */
-
     private int RedTime;
     private int YellowTime;
     private int GreenTime;
-    /**
-     * Status : Green
-     * Time : 55
-     */
-
-    private String Status;
     private String Time;
     private Integer TrafficLightId;
+    private String Status;
     private String StatusDesc;
     private int StatusResId;
-    private Integer RoadId;
 
     public int getRedTime() {
         return RedTime;
@@ -94,11 +82,4 @@ public class TrafficLightBean {
         StatusResId = statusResId;
     }
 
-    public Integer getRoadId() {
-        return RoadId;
-    }
-
-    public void setRoadId(Integer roadId) {
-        RoadId = roadId;
-    }
 }

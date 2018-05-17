@@ -3,6 +3,7 @@ package org.chengpx.fragment.mytraffic;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -40,6 +41,7 @@ public class RoadEnvFragment extends BaseFragment implements SurfaceHolder.Callb
     private MediaPlayer mMediaPlayer;
     private boolean mIsPause;
     private Timer mTimer;
+    private ProgressDialog mEnvLoadDialog;
 
     @Override
     protected void initListener() {
@@ -69,17 +71,22 @@ public class RoadEnvFragment extends BaseFragment implements SurfaceHolder.Callb
         if (mIsPause && !mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
         }
-        mTimer = new Timer();
-        mTimer.schedule(new MyTimerTask(), 0, 3000);
     }
 
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
+        mEnvLoadDialog = showLoadingDialog("环境数据加载", "");
+        mTimer = new Timer();
+        mTimer.schedule(new MyTimerTask(), 0, 3000);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetAllSense(AllSenseBean allSenseBean) {
+        if (mEnvLoadDialog != null) {
+            mEnvLoadDialog.dismiss();
+            mEnvLoadDialog = null;
+        }
         int pm25254 = allSenseBean.get_$Pm25171();
         roadenvTvPm25val.setText("PM2.5当前值:" + pm25254);
         int lightIntensity = allSenseBean.getLightIntensity();

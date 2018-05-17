@@ -8,6 +8,14 @@ public class WeatherBean {
     private Integer temperature;
     private Integer[] range;
 
+    public WeatherBean(String desc, Integer resId, Integer level) {
+        this.desc = desc;
+        this.resId = resId;
+        this.level = level;
+    }
+
+    public WeatherBean() {
+    }
 
     public String getDesc() {
         return desc;
@@ -31,15 +39,6 @@ public class WeatherBean {
 
     public void setLevel(Integer level) {
         this.level = level;
-    }
-
-    public WeatherBean(String desc, Integer resId, Integer level) {
-        this.desc = desc;
-        this.resId = resId;
-        this.level = level;
-    }
-
-    public WeatherBean() {
     }
 
     public Integer getTemperature() {

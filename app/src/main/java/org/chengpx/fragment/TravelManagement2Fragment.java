@@ -2,9 +2,6 @@ package org.chengpx.fragment;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +15,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.chengpx.R;
+import org.chengpx.base.BaseFragment;
 import org.chengpx.domain.CarBean;
 import org.chengpx.domain.TrafficLightBean;
 import org.chengpx.util.net.NetUtil;
@@ -26,58 +24,44 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * 出行管理, 小车单双号管制
+ */
+public class TravelManagement2Fragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
-public class TravelManagementFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, DatePickerDialog.OnDateSetListener {
-
-    private String mTag = getClass().getName();
+    private String mTag = "org.chengpx.fragment.TravelManagement2Fragment";
 
     private TextView mTest1TvDate;
     private TextView mTest1TvEnablecariddesc;
-    private TextView mTest1TvEnablecarids;
     private ListView mTest1LvData;
     private ImageView mTest1IvRedlight;
     private ImageView mTest1IvYellowlight;
     private ImageView mTest1IvGreenlight;
     private Calendar calendar;
-    private String enableCarDesc;
-    private List<Integer> enableCarIdList;
     private CarBean[] mCarBeanArr = {
             new CarBean(1), new CarBean(2), new CarBean(3)
     };
     private int mReqGetCarMoveIndex;
     private Map<Integer, CarBean> carBeanMap;
-    private FragmentActivity activity;
     private MyAdapter myAdapter;
     private Timer timer;
-    private DatePickerDialog datePickerDialog;
+    private StringBuilder mEnablCarDescSBuilder;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
-        View view = initView(inflater, container, savedInstanceState);
-        initListener();
-        return view;
-    }
-
-    private void initListener() {
+    protected void initListener() {
         mTest1TvDate.setOnClickListener(this);
     }
 
-    private View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_travelmanagement, container, false);
+    protected View initView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_travelmanager2, container, false);
         mTest1TvDate = (TextView) view.findViewById(R.id.test1_tv_date);
         mTest1TvEnablecariddesc = (TextView) view.findViewById(R.id.test1_tv_enablecariddesc);
-        mTest1TvEnablecarids = (TextView) view.findViewById(R.id.test1_tv_enablecarids);
         mTest1LvData = (ListView) view.findViewById(R.id.test1_lv_data);
         mTest1IvRedlight = (ImageView) view.findViewById(R.id.test1_iv_redlight);
         mTest1IvYellowlight = (ImageView) view.findViewById(R.id.test1_iv_yellowlight);
@@ -85,47 +69,32 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        onDie();
-    }
-
-    private void onDie() {
+    protected void onDie() {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
-        calendar = Calendar.getInstance(Locale.CHINA);
-        initData();
-        main();
-    }
-
-    private void main() {
+    protected void main() {
         mTest1TvDate.setText(new SimpleDateFormat("yyyy年MM月dd日").format(calendar.getTime()));
-        mTest1TvEnablecariddesc.setText(enableCarDesc);
-        mTest1TvEnablecarids
-                .setText(enableCarIdList.toString().replace("[", "").replace("]", ""));
+        mTest1TvEnablecariddesc.setText(mEnablCarDescSBuilder.toString());
         myAdapter = new MyAdapter();
         mTest1LvData.setAdapter(myAdapter);
     }
 
-    private void initData() {
+    protected void initData() {
+        EventBus.getDefault().register(this);
+        calendar = Calendar.getInstance(Locale.CHINA);
         carBeanMap = new HashMap<>();
+        mEnablCarDescSBuilder = new StringBuilder();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         if (day % 2 == 0) {// 双号
-            enableCarDesc = "双号出行车辆: ";
+            mEnablCarDescSBuilder.append("双号出行车辆: ");
         } else {
-            enableCarDesc = "单号出行车辆: ";
+            mEnablCarDescSBuilder.append("单号出行车辆: ");
         }
-        enableCarIdList = new ArrayList<>();
         for (int index = 0; index < mCarBeanArr.length; index++) {
             CarBean carBean = mCarBeanArr[index];
             if (day % 2 == carBean.getCarId() % 2) {
-                enableCarIdList.add(carBean.getCarId());
+                mEnablCarDescSBuilder.append(carBean.getCarId()).append(", ");
                 carBean.setEnable(true);
             } else {
                 carBean.setEnable(false);
@@ -155,17 +124,11 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        EventBus.getDefault().unregister(this);
-        onDims();
-    }
-
-    private void onDims() {
+    protected void onDims() {
         timer.cancel();
         timer = null;
         mReqGetCarMoveIndex = 0;
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -194,8 +157,8 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void getTrafficLightNowStatus(TrafficLightBean trafficlightBean) {
-        switch (trafficlightBean.getStatus()) {
+    public void getTrafficLightNowStatus(TrafficLightBean trafficLightBean) {
+        switch (trafficLightBean.getStatus()) {
             case "Red":
                 mTest1IvRedlight.setImageResource(R.drawable.shape_oval_red);
                 mTest1IvYellowlight.setImageResource(R.drawable.shape_oval_gray);
@@ -224,7 +187,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     }
 
     private void showDialog() {
-        datePickerDialog = new DatePickerDialog(activity,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(mFragmentActivity,
                 this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
@@ -232,27 +195,28 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
         Log.d(mTag, "datePicker = " + datePicker.toString() + ", i = " + i + ", i1 = " + i1 + ", i2 = " + i2);
+        if (!datePicker.isShown()) {// 确保 datePicker以及其父控件为可见, 防止该方法多次调用
+            return;
+        }
         calendar.set(Calendar.DAY_OF_MONTH, i2);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
+        mEnablCarDescSBuilder.delete(0, mEnablCarDescSBuilder.length());
         if (day % 2 == 0) {// 双号
-            enableCarDesc = "双号出行车辆: ";
+            mEnablCarDescSBuilder.append("双号出行车辆: ");
         } else {
-            enableCarDesc = "单号出行车辆: ";
+            mEnablCarDescSBuilder.append("单号出行车辆: ");
         }
-        enableCarIdList = new ArrayList<>();
         for (int index = 0; index < mCarBeanArr.length; index++) {
             CarBean carBean = mCarBeanArr[index];
             if (day % 2 == carBean.getCarId() % 2) {
-                enableCarIdList.add(carBean.getCarId());
+                mEnablCarDescSBuilder.append(carBean.getCarId()).append(", ");
                 carBean.setEnable(true);
             } else {
                 carBean.setEnable(false);
             }
         }
         mTest1TvDate.setText(new SimpleDateFormat("yyyy年MM月dd日").format(calendar.getTime()));
-        mTest1TvEnablecariddesc.setText(enableCarDesc);
-        mTest1TvEnablecarids
-                .setText(enableCarIdList.toString().replace("[", "").replace("]", ""));
+        mTest1TvEnablecariddesc.setText(mEnablCarDescSBuilder.toString());
         myAdapter.notifyDataSetChanged();
     }
 
@@ -290,7 +254,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder = null;
             if (view == null) {
-                view = LayoutInflater.from(activity).inflate(R.layout.item_test1_lv_data,
+                view = LayoutInflater.from(mFragmentActivity).inflate(R.layout.item_test1_lv_data,
                         mTest1LvData, false);
                 viewHolder = new ViewHolder(view);
                 view.setTag(viewHolder);
@@ -306,7 +270,7 @@ public class TravelManagementFragment extends Fragment implements CompoundButton
                 viewHolder.test1_switch_lvcontrol.setChecked(false);
             }
             if (viewHolder.test1_switch_lvcontrol.isEnabled()) {
-                viewHolder.test1_switch_lvcontrol.setOnCheckedChangeListener(TravelManagementFragment.this);
+                viewHolder.test1_switch_lvcontrol.setOnCheckedChangeListener(TravelManagement2Fragment.this);
                 viewHolder.test1_switch_lvcontrol.setTag(carBean);
             }
             return view;
