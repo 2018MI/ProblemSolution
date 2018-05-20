@@ -2,7 +2,6 @@ package org.chengpx.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v4.app.FragmentActivity;
 
 /**
  * create at 2018/5/10 15:44 by chengpx
@@ -38,14 +37,16 @@ public class SpUtils {
 
     public void putInt(String key, int val) {
         SharedPreferences.Editor edit = mConfig.edit();
-        edit.putInt(key, val);
-        edit.apply();
+        edit.putInt(key, val).apply();
     }
 
     public void putBoolean(String key, boolean val) {
         SharedPreferences.Editor edit = mConfig.edit();
-        edit.putBoolean(key, val);
-        edit.apply();
+        edit.putBoolean(key, val).apply();
     }
 
+    public void remove(String key) {
+        SharedPreferences.Editor editor = mConfig.edit();
+        editor.remove(key).apply();
+    }
 }

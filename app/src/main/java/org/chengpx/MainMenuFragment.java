@@ -24,6 +24,7 @@ import org.chengpx.fragment.TrafficLightFragment;
 import org.chengpx.fragment.TrafficLightManagerFragment;
 import org.chengpx.fragment.TravelManagementFragment;
 import org.chengpx.fragment.WeatherFragment;
+import org.chengpx.fragment.mymsg.MyMsgFragment;
 import org.chengpx.fragment.mytraffic.MyTrafficFragment;
 
 /**
@@ -36,7 +37,7 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private String[] mItemStrArr = {
             "道路环境", "我的交通",
             "红绿灯管理", "红绿灯管理2",
-            "阈值设置", "路况查询",
+            "阈值设置", "路况查询", "我的消息",
             "天气信息", "地铁路线查看",
             "小车车速监控",
             "小车账户充值", "etc管理", "小车单双号管制"
@@ -44,7 +45,7 @@ public class MainMenuFragment extends Fragment implements AdapterView.OnItemClic
     private Fragment[] mFragmentArr = {
             new EnvFragment(), new MyTrafficFragment(),
             new TrafficLightManagerFragment(), new TrafficLightFragment(),
-            new ThresholdSettingFragment(), new RoadStatusQueryFragment(),
+            new ThresholdSettingFragment(), new RoadStatusQueryFragment(), new MyMsgFragment(),
             new WeatherFragment(), new SubwayFragment(),
             new CarSpeedListenerFragment(),
             new CarManagerFragment(), new MyEtcFragment(), new TravelManagementFragment()

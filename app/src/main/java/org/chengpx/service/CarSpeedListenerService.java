@@ -6,8 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import org.chengpx.base.BaseService;
 import org.chengpx.R;
+import org.chengpx.base.BaseService;
 import org.chengpx.domain.CarOverSpeedHistoryBean;
 import org.chengpx.util.SpUtils;
 import org.chengpx.util.db.CarOverSpeedHistoryDao;
@@ -83,7 +83,7 @@ public class CarSpeedListenerService extends BaseService {
             NetUtil.getNetUtil().addRequest("GetCarSpeed.do", values, CarOverSpeedHistoryBean.class);
         } else {
             Intent intent = new Intent();
-            intent.setAction("CarSpeedListenerFragmentBroadcastReceiver");
+            intent.setAction("org.chengpx.fragment.CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver");
             sendBroadcast(intent);
         }
     }

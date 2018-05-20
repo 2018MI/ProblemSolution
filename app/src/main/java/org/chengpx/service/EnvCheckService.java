@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import org.chengpx.R;
@@ -33,9 +34,12 @@ public class EnvCheckService extends BaseService {
 
     private Timer mTimer;
     private EnvBean[] mEnvBeanArr = {
-            new EnvBean("temperature", "温度", new int[]{0, 37}), new EnvBean("humidity", "湿度", new int[]{20, 80}),
-            new EnvBean("LightIntensity", "光照强度", new int[]{1, 5000}), new EnvBean("co2", "co2", new int[]{350, 7000}),
-            new EnvBean("pm2.5", "pm2.5", new int[]{0, 300}), new EnvBean("RoadStatus", "道路状态", new int[]{1, 5})
+            new EnvBean("temperature", "温度", new int[]{0, 37}, "[温度]警告"),
+            new EnvBean("humidity", "湿度", new int[]{20, 80}, "[湿度]警告"),
+            new EnvBean("LightIntensity", "光照强度", new int[]{1, 5000}, "[光照强度]警告"),
+            new EnvBean("co2", "co2", new int[]{350, 7000}, "[co2]警告"),
+            new EnvBean("pm2.5", "pm2.5", new int[]{0, 300}, "[pm2.5]警告"),
+            new EnvBean("RoadStatus", "道路状态", new int[]{1, 5}, "[道路状态]警告")
     };
 
     @Override
@@ -63,15 +67,24 @@ public class EnvCheckService extends BaseService {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getAllSense(Map<String, Double> map) {
         SpUtils spUtils = SpUtils.getInstance(this);
-        for (int index = 0; index < mEnvBeanArr.length -1; index++) {
+        for (int index = 0; index < mEnvBeanArr.length - 1; index++) {
             EnvBean envBean = mEnvBeanArr[index];
             int anInt = spUtils.getInt(envBean.getSenseName(), -1);
             if (anInt == -1) {
                 continue;
             }
             Integer val = map.get(envBean.getSenseName()).intValue();
+            envBean.setVal(val);
             if (val > anInt) {
                 sendNotification(envBean.getSenseDesc(), val, anInt, index);
+                Intent intent = new Intent();
+                intent.setAction("org.chengpx.fragment.mymsg.MsgQueryFragment.MsgQueryFragmentBroadcastReceiver");
+                Bundle bundle = new Bundle();
+                bundle.putString("warnType", envBean.getWarnType());
+                bundle.putInt("val", envBean.getVal());
+                bundle.putInt("yuzhi", spUtils.getInt(envBean.getSenseName(), -1));
+                intent.putExtra("warndata", bundle);
+                sendBroadcast(intent);
             } else {
                 clearNotification(index);
             }
@@ -95,7 +108,6 @@ public class EnvCheckService extends BaseService {
     }
 
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getRoadStatus(RoadBean roadBean) {
         SpUtils spUtils = SpUtils.getInstance(this);
@@ -105,8 +117,17 @@ public class EnvCheckService extends BaseService {
             return;
         }
         Integer val = roadBean.getStatus();
+        envBean.setVal(val);
         if (val > anInt) {
             sendNotification(envBean.getSenseDesc(), val, anInt, mEnvBeanArr.length - 1);
+            Intent intent = new Intent();
+            intent.setAction("org.chengpx.fragment.mymsg.MsgQueryFragment.MsgQueryFragmentBroadcastReceiver");
+            Bundle bundle = new Bundle();
+            bundle.putString("warnType", envBean.getWarnType());
+            bundle.putInt("val", envBean.getVal());
+            bundle.putInt("yuzhi", spUtils.getInt(envBean.getSenseName(), -1));
+            intent.putExtra("warndata", bundle);
+            sendBroadcast(intent);
         } else {
             clearNotification(mEnvBeanArr.length - 1);
         }

@@ -115,6 +115,7 @@ public class ThresholdSettingFragment extends BaseFragment implements View.OnCli
         for (int index = 0; index < mEditTextArr.length; index++) {
             String str = mEditTextArr[index].getText().toString();
             if (TextUtils.isEmpty(str)) {
+                SpUtils.getInstance(mFragmentActivity).remove(mEnvBeanArr[index].getSenseName());
                 continue;
             }
             if (!str.matches("^[1-9]\\d*$")) {

@@ -110,7 +110,7 @@ public class NetUtil {
                         EventBus.getDefault().post(false);
                     } finally {
                         try {
-                            Thread.sleep(300);
+                            Thread.sleep(250);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

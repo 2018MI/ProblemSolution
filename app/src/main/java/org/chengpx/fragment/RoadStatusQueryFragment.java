@@ -153,8 +153,10 @@ public class RoadStatusQueryFragment extends BaseFragment implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.test13_btn_flush:
-                NetUtil.getNetUtil().addRequest("GetAllSense.do", null, Map.class);
-                mSenseLoadDialog = showLoadingDialog("传感器数据加载", "");
+                if (mSenseLoadDialog == null) {
+                    NetUtil.getNetUtil().addRequest("GetAllSense.do", null, Map.class);
+                    mSenseLoadDialog = showLoadingDialog("传感器数据加载", "");
+                }
                 break;
         }
     }

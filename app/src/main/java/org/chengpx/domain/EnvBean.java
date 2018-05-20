@@ -12,8 +12,8 @@ public class EnvBean {
     private int id;
     @DatabaseField(columnName = "DateTime")
     private Date dateTime;
-    @DatabaseField(columnName = "senseName")
-    private String senseName;
+    @DatabaseField(columnName = "SenseName")
+    private String SenseName;
     @DatabaseField(columnName = "senseDesc")
     private String senseDesc;
     @DatabaseField(columnName = "val")
@@ -22,25 +22,50 @@ public class EnvBean {
     private int[] range;
     @DatabaseField(persisted = false)
     private String unit;
+    @DatabaseField(persisted = false)
+    private String warnType;
+    @DatabaseField(persisted = false)
+    private Integer yuzhi;
 
     public EnvBean(String senseName, String senseDesc, int[] range) {
-        this.senseName = senseName;
+        this.SenseName = senseName;
         this.senseDesc = senseDesc;
         this.range = range;
+    }
+
+    public EnvBean(String senseName, String senseDesc, int[] range, String warnType) {
+        SenseName = senseName;
+        this.senseDesc = senseDesc;
+        this.range = range;
+        this.warnType = warnType;
     }
 
     public EnvBean() {
     }
 
+    public EnvBean(Integer val, String warnType, Integer yuzhi) {
+        this.val = val;
+        this.warnType = warnType;
+        this.yuzhi = yuzhi;
+    }
+
     public EnvBean(String senseName, int[] range) {
-        this.senseName = senseName;
+        this.SenseName = senseName;
         this.range = range;
     }
 
     public EnvBean(String senseName, String senseDesc, String unit) {
-        this.senseName = senseName;
+        this.SenseName = senseName;
         this.senseDesc = senseDesc;
         this.unit = unit;
+    }
+
+    public EnvBean(String senseName, String senseDesc, int[] range, String warnType, Integer yuzhi) {
+        SenseName = senseName;
+        this.senseDesc = senseDesc;
+        this.range = range;
+        this.warnType = warnType;
+        this.yuzhi = yuzhi;
     }
 
     public int getId() {
@@ -60,11 +85,11 @@ public class EnvBean {
     }
 
     public String getSenseName() {
-        return senseName;
+        return SenseName;
     }
 
     public void setSenseName(String senseName) {
-        this.senseName = senseName;
+        this.SenseName = senseName;
     }
 
     public String getSenseDesc() {
@@ -97,5 +122,21 @@ public class EnvBean {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getWarnType() {
+        return warnType;
+    }
+
+    public void setWarnType(String warnType) {
+        this.warnType = warnType;
+    }
+
+    public Integer getYuzhi() {
+        return yuzhi;
+    }
+
+    public void setYuzhi(Integer yuzhi) {
+        this.yuzhi = yuzhi;
     }
 }

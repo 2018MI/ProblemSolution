@@ -63,7 +63,6 @@ public class MyTrafficFragment extends BaseFragment implements RadioGroup.OnChec
     protected void main() {
         mPageAdapter = new MyPageAdapter(getChildFragmentManager());
         mMytrafficViewpagerContent.setAdapter(mPageAdapter);
-        mMytrafficViewpagerContent.setCurrentItem(0);
     }
 
     @Override

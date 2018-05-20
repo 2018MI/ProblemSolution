@@ -25,6 +25,17 @@
         <service android:name=".service.EnvCheckService" />
         <service android:name=".service.CarSpeedListenerService" />
 
+        <receiver android:name=".fragment.CarSpeedListenerFragment$CarSpeedListenerFragmentBroadcastReceiver">
+            <intent-filter>
+                <action android:name="org.chengpx.fragment.CarSpeedListenerFragment.CarSpeedListenerFragmentBroadcastReceiver"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".fragment.mymsg.MsgQueryFragment$MsgQueryFragmentBroadcastReceiver">
+            <intent-filter>
+                <action android:name="org.chengpx.fragment.mymsg.MsgQueryFragment.MsgQueryFragmentBroadcastReceiver"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
